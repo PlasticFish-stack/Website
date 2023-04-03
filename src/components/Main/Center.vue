@@ -1,5 +1,5 @@
 <script setup>
-
+import videoCenter from '../load/videoCenter.vue';
 </script>
 
 <template>
@@ -14,8 +14,8 @@
         <el-divider direction="vertical" />
         <img src="src\assets\png\Page\arctik.png" alt="" srcset="">
       </div>
-
     </div>
+    <videoCenter></videoCenter>
   </div>
 </template>
 
@@ -69,18 +69,17 @@
 }
 
 #box_img {
+  width: 100%;
   color: black;
   flex-wrap: nowrap;
 }
 
 #box_img>img {
-  height: 200px;
-  width: 420px;
+  height: 72%;
+  width: 49%;
   position: relative;
   top: 50%;
   transform: translateY(-50%);
-  margin-right: 40px;
-  margin-left: 40px;
 }
 
 :deep(.el-divider--vertical) {

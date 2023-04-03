@@ -19,7 +19,7 @@ const page = reactive([
       num: 4,
     }
   ])
-let screenwidth = (document.documentElement.clientWidth * 668) / 1620 + "px"
+let screenwidth = (document.documentElement.clientWidth) / 2.48 + "px"
 onMounted(() => {
   window.onresize = () => {
     return (() => {
