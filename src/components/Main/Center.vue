@@ -1,7 +1,8 @@
 <script setup>
+import { ref } from 'vue';
 import videoCenter from '../load/videoCenter.vue';
-const pages_video = ['舞台灯光', '建筑照明', '灯光秀', '活动视频'];
-const pages_new = ['雅江动态', '媒体报道', '雅江公益', '展会'];
+const pagesVideo = ['舞台灯光', '建筑照明', '灯光秀', '活动视频'];
+const pagesNew = ['雅江动态', '媒体报道', '雅江公益', '展会'];
 </script>
 
 <template>
@@ -20,13 +21,13 @@ const pages_new = ['雅江动态', '媒体报道', '雅江公益', '展会'];
     <videoCenter 
       title="视频中心"
       page="VIDEO CENTER"
-      :block="pages_video"
+      :block="pagesVideo"
       type="video"
     />
     <videoCenter
       title="新闻动态"
       page="NEWS"
-      :block="pages_new"
+      :block="pagesNew"
       type="news"
     />
   </div>

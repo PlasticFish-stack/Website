@@ -1,28 +1,44 @@
 <script setup>
 import { onMounted, ref } from 'vue';
-
-
 const props = defineProps(['title', 'page', 'block', 'type',]);
 let showBool = true
 if (props.type != 'video') {
   showBool = false
 }
-const num = ref(5)
-function changePage(key){
-  console.log(document.getElementById('swiper').style.transform(transformX)+ '231312');
-  document.getElementById('swiper').style.transform = "translateX(+40px)";
+const num = ref(7);
+onMounted(() => {
+  if(num.value < 5){
+    document.getElementById('swiper').style.justifyContent = 'center';
+  }
+})
+function changePosition(item){
+  if(num.value < 5){
+    return
+  }
+  if(item > num.value - 5){
+    swiper_hook.style.transform = 'translateX(' + (-260 * (num.value - 5)) + 'px' + ')';
+  }else{
+    swiper_hook.style.transform = 'translateX(' + (-260 * item) + 'px' + ')';
+  }
+  
 }
 </script>
 
 <template>
   <div :class="showBool === true ? 'centerVideo' : 'centerNews'">
+
     <span id="page">{{ props.page }}</span>
     <span id="title">{{ props.title }}</span>
     <ul id="ul_f">
-      <li id="li_f" v-for="item in props.block" :key="item"><el-button round type="success">{{ item }}</el-button></li>
+      <li id="li_f" v-for="item in props.block" :key="item">
+        <el-button round type="success">
+          {{ item }}
+        </el-button>
+      </li>
     </ul>
+
     <div id="grid" v-if="showBool">
-      <el-card v-for="item in 8">
+      <el-card v-for="item in 6">
         <img src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
           class="image" />
         <div id="cardText">
@@ -30,25 +46,25 @@ function changePage(key){
         </div>
       </el-card>
     </div>
+
     <div id="swiper" v-if="!showBool">
-      <div id="swiper_hook">
-        <div v-for="item in num" :key="item" class="swiper_box" >item</div>
+      <div id="swiper_hook" style="transform: translateX(0px);">
+        <div v-for="item in num" :key="item" class="swiper_box" >{{item}}</div>
       </div>
       <ul id="ul_s">
-        <li v-for="item in num" :key="item"  id="li_s" @click="changePage(item)"><button></button></li>
+        <li v-for="item in num" :key="item"  id="li_s" @click="changePosition(item-1)"><button></button></li>
       </ul>
     </div>
+
   </div>
 </template>
 
 <style scoped>
 #swiper_hook{
   height: 400px;
-  width: 100%;
-  overflow: hidden;
   display: flex;
   align-items: center;
-  justify-content: center;
+  padding-left: 20px;
 }
 #ul_s{
   display: flex;
@@ -56,7 +72,7 @@ function changePage(key){
   margin-top: 330px;
   left: 50%;
   transform: translateX(-50%);
-  padding-left: 0px;
+  padding-right: 75px;
 }
 #li_s>button{
   height: 15px;
@@ -64,9 +80,10 @@ function changePage(key){
   border-radius: 45px;
   padding: 0px;
   background-color: #909399;
+  flex-shrink: 0;
 }
 #li_s>button:hover{
-  border-color:  #e1f3d8;
+  border-color:  transparent;
   background-color: #95d475;
 }
 #li_s>button:focus {
@@ -76,7 +93,6 @@ function changePage(key){
   outline-style: none;
 }
 #li_s{
-  
   margin-left: 25px;
   list-style: none;
 }
@@ -89,21 +105,24 @@ function changePage(key){
   overflow: hidden;
 }
 #swiper{
-  padding-left: 20px;
   height: 400px;
-  width: 100%;
-  background-color: gray;
+  width: 1320px;
+  background-color: transparent;
   display: flex;
   align-items: center;
-  justify-content: center;
+  padding: 0px;
+  overflow: hidden;
+  margin: 0 auto;
+  justify-content: left;
 }
 .swiper_box{
   margin-top: -60px;
   height: 300px;
-  width: 200px;
+  width: 240px;
   background-color: black;
   color: red;
-  margin-right: 30px;
+  margin-right: 20px;
+  flex-shrink: 0;
 }
 img {
   height: 260px;
@@ -131,7 +150,6 @@ img {
   align-items: center;
   justify-content: center;
   position: relative;
-  z-index: 1;
 }
 
 
