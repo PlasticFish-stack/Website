@@ -1,5 +1,7 @@
 <script setup>
 import videoCenter from '../load/videoCenter.vue';
+const pages_video = ['舞台灯光', '建筑照明', '灯光秀', '活动视频'];
+const pages_new = ['雅江动态', '媒体报道', '雅江公益', '展会'];
 </script>
 
 <template>
@@ -15,7 +17,18 @@ import videoCenter from '../load/videoCenter.vue';
         <img src="src\assets\png\Page\arctik.png" alt="" srcset="">
       </div>
     </div>
-    <videoCenter></videoCenter>
+    <videoCenter 
+      title="视频中心"
+      page="VIDEO CENTER"
+      :block="pages_video"
+      type="video"
+    />
+    <videoCenter
+      title="新闻动态"
+      page="NEWS"
+      :block="pages_new"
+      type="news"
+    />
   </div>
 </template>
 
@@ -27,10 +40,7 @@ import videoCenter from '../load/videoCenter.vue';
   background-color: white;
   position: relative;
   top: -20px;
-  left: -20px;
   margin-top: 100px;
-  margin-bottom: 80px;
-
 }
 
 #box {
@@ -44,6 +54,7 @@ import videoCenter from '../load/videoCenter.vue';
   border-bottom: 1px solid var(--el-border-color);
   box-shadow: var(--el-box-shadow-dark);
   border-radius: 4px;
+  margin-bottom: 80px;
 }
 
 #box_card {
@@ -72,14 +83,20 @@ import videoCenter from '../load/videoCenter.vue';
   width: 100%;
   color: black;
   flex-wrap: nowrap;
+  overflow: hidden;
 }
 
 #box_img>img {
   height: 72%;
   width: 49%;
   position: relative;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 15%;
+}
+#box_img>img:hover {
+  height: 72%;
+  width: 49%;
+  position: relative;
+  animation: bigbig 0.2s forwards !important;
 }
 
 :deep(.el-divider--vertical) {
