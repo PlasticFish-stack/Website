@@ -50,6 +50,7 @@ const search = ref('')
   justify-content: flex-end;
   align-items: center;
   overflow: hidden;
+  z-index: 1;
 }
 .search{
   width: 12rem;

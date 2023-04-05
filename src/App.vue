@@ -1,6 +1,7 @@
 <script setup>
   import Navgation from "./components/Head/Navgation.vue";
   import Bar from "./components/Head/Bar.vue"
+  
 
 </script>
 
@@ -9,14 +10,14 @@
     <el-container>
       <el-header class="El_header" height="128px">
         <Navgation style="z-index: 1;"></Navgation>
-        <Bar></Bar>
+        <Bar type="head"></Bar>
       </el-header>
       <el-main class="El_main">
         <router-view/>
       </el-main>
-      <!-- <el-footer class="El_footer"  height="150px">
-        
-      </el-footer> -->
+      <el-footer class="El_footer"  height="150px">
+        <Bar type="foot"></Bar>
+      </el-footer>
     </el-container>
     <el-backtop :right="50" :bottom="50" />
   </div>
@@ -36,13 +37,14 @@
 .El_header{
   background-color: brown;
   overflow: hidden;
+  padding:0px
 }
 .El_main{
   background-color: white;
   padding:0px
 }
 .El_footer{
-  background-color: green;
+  padding:0px
 }
 
 </style>

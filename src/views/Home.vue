@@ -14,7 +14,6 @@
   <div>
     <Carousel></Carousel>
     <Center></Center>
-    {{ Num }}
   </div>
 </template>
 

@@ -5,22 +5,21 @@ let showBool = true
 if (props.type != 'video') {
   showBool = false
 }
-const num = ref(7);
+const num = ref(4);
 onMounted(() => {
-  if(num.value < 5){
+  if (num.value < 5) {
     document.getElementById('swiper').style.justifyContent = 'center';
   }
 })
-function changePosition(item){
-  if(num.value < 5){
+function changePosition(item) {
+  if (num.value < 4) {
     return
   }
-  if(item > num.value - 5){
-    swiper_hook.style.transform = 'translateX(' + (-260 * (num.value - 5)) + 'px' + ')';
-  }else{
-    swiper_hook.style.transform = 'translateX(' + (-260 * item) + 'px' + ')';
+  if (item > num.value - 4) {
+    swiper_hook.style.transform = 'translateX(' + (-337 * (num.value - 4)) + 'px' + ')';
+  } else {
+    swiper_hook.style.transform = 'translateX(' + (-337 * item) + 'px' + ')';
   }
-  
 }
 </script>
 
@@ -38,9 +37,8 @@ function changePosition(item){
     </ul>
 
     <div id="grid" v-if="showBool">
-      <el-card v-for="item in 6">
-        <img src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
-          class="image" />
+      <el-card v-for="item in 6" id="grid_card">
+        <img src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png" class="image" />
         <div id="cardText">
           <span>Yummy hamburger</span>
         </div>
@@ -49,10 +47,16 @@ function changePosition(item){
 
     <div id="swiper" v-if="!showBool">
       <div id="swiper_hook" style="transform: translateX(0px);">
-        <div v-for="item in num" :key="item" class="swiper_box" >{{item}}</div>
+        <el-card :body-style="{ padding: '0px' }" class="swiper_box" v-for="item in num" :key="item">
+          <img src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
+            class="image" />
+          <div style="padding: 0px">
+            <span>{{ item }}</span>
+          </div>
+        </el-card>
       </div>
       <ul id="ul_s">
-        <li v-for="item in num" :key="item"  id="li_s" @click="changePosition(item-1)"><button></button></li>
+        <li v-for="item in num" :key="item" id="li_s" @click="changePosition(item - 1)"><button></button></li>
       </ul>
     </div>
 
@@ -60,21 +64,23 @@ function changePosition(item){
 </template>
 
 <style scoped>
-#swiper_hook{
+#swiper_hook {
   height: 400px;
   display: flex;
   align-items: center;
-  padding-left: 20px;
 }
-#ul_s{
+
+#ul_s {
   display: flex;
   position: absolute;
-  margin-top: 330px;
+  margin-top: -50px;
+  margin-left: 8px;
   left: 50%;
   transform: translateX(-50%);
   padding-right: 75px;
 }
-#li_s>button{
+
+#li_s>button {
   height: 15px;
   width: 15px;
   border-radius: 45px;
@@ -82,20 +88,25 @@ function changePosition(item){
   background-color: #909399;
   flex-shrink: 0;
 }
-#li_s>button:hover{
-  border-color:  transparent;
+
+#li_s>button:hover {
+  border-color: transparent;
   background-color: #95d475;
 }
+
 #li_s>button:focus {
   outline-style: none;
 }
-#li_s>button:focus-visible{
+
+#li_s>button:focus-visible {
   outline-style: none;
 }
-#li_s{
+
+#li_s {
   margin-left: 25px;
   list-style: none;
 }
+
 #grid {
   width: 80%;
   display: flex;
@@ -104,27 +115,28 @@ function changePosition(item){
   margin: 0 auto;
   overflow: hidden;
 }
-#swiper{
+
+#swiper {
   height: 400px;
-  width: 1320px;
+  width: 1330px;
   background-color: transparent;
-  display: flex;
-  align-items: center;
-  padding: 0px;
   overflow: hidden;
+  position: relative;
   margin: 0 auto;
-  justify-content: left;
 }
-.swiper_box{
+
+.swiper_box {
   margin-top: -60px;
-  height: 300px;
-  width: 240px;
-  background-color: black;
+  height: 330px;
+  width: 320px;
+  background-color: white;
   color: red;
-  margin-right: 20px;
+  margin-right: 10px;
+  margin-left: 5px;
   flex-shrink: 0;
 }
-img {
+
+.image {
   height: 260px;
   width: 100%;
   position: relative;
@@ -132,12 +144,12 @@ img {
   z-index: 0;
 }
 
-:deep(.el-card) {
+:deep(#grid>.el-card) {
   height: 260px;
   width: 400px;
   --el-card-padding: 0px;
   margin-left: 30px;
-  margin-bottom: 40px;
+  margin-bottom: 120px;
 }
 
 #cardText {
@@ -196,7 +208,7 @@ img {
 }
 
 #page {
-  display:inline-block;
+  display: inline-block;
   font-size: 24px;
   margin-top: 45px;
   color: #606266;
@@ -236,5 +248,4 @@ img {
   width: 15%;
   background-color: #a0c836;
   border: 0;
-}
-</style>
+}</style>

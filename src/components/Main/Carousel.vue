@@ -48,6 +48,8 @@ onMounted(() => {
   width: 100%;
   padding:0px;
   margin: 0px;
+  position: relative;
+  z-index: 0;
 }
 :deep(.el-carousel__indicators--horizontal){
   bottom: 45px;
@@ -69,6 +71,7 @@ onMounted(() => {
   transform-origin: 8px 12px;
   transform:scale(1.5);
   outline: none;
+  position: relative;
 }
 :deep(.is-active>.el-carousel__button::after){
   content: '';
@@ -80,6 +83,5 @@ onMounted(() => {
   left: 21%;
   top: 0%;
   display: block;
-
 }
 </style>
