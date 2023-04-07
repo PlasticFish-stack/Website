@@ -23,7 +23,10 @@ const search = ref('')
     </el-dropdown>
     <ul id="link">
       <li v-for="item in link" class="link">
-        <img :src="'/src/assets/icon/svgicons/' + item + '.svg'" alt="">
+        <a href="">
+          <img :src="'/src/assets/icon/svgicons/' + item + '.svg'" alt="">
+        </a>
+        
       </li>
     </ul>
     <el-input
@@ -69,6 +72,7 @@ const search = ref('')
 
 #link {
   width: 280px;
+  margin-left: -20px;
   margin-right: 0.5rem;
 }
 

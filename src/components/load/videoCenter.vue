@@ -37,7 +37,7 @@ function changePosition(item) {
     </ul>
 
     <div id="grid" v-if="showBool">
-      <el-card v-for="item in 6" id="grid_card">
+      <el-card v-for="item in 4" id="grid_card">
         <img src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png" class="image" />
         <div id="cardText">
           <span>Yummy hamburger</span>
@@ -114,6 +114,7 @@ function changePosition(item) {
   flex-wrap: wrap;
   margin: 0 auto;
   overflow: hidden;
+  padding-bottom: 50px;
 }
 
 #swiper {
@@ -149,7 +150,7 @@ function changePosition(item) {
   width: 400px;
   --el-card-padding: 0px;
   margin-left: 30px;
-  margin-bottom: 120px;
+  margin-bottom: 50px;
 }
 
 #cardText {

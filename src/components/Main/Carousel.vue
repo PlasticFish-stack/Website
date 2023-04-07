@@ -1,5 +1,10 @@
 <script setup>
-import { reactive, onMounted } from 'vue';
+import { computed } from '@vue/reactivity';
+import { reactive, onMounted, watch} from 'vue';
+import { useStore } from 'vuex'
+
+const store = useStore();
+let windowWidth = computed(() => store.state.windowWidth);
 const page = reactive([
     {
       id: 0,
@@ -21,13 +26,15 @@ const page = reactive([
   ])
 let screenwidth = (document.documentElement.clientWidth) / 2.48 + "px"
 onMounted(() => {
-  window.onresize = () => {
-    return (() => {
-      if(document.documentElement.clientWidth > 960){
-        screenwidth = (document.documentElement.clientWidth * 668)
-      }
-    }) 
-  }
+  store.commit('widthObtain')
+  console.log(windowWidth, '123');
+  // window.onresize = () => {
+  //   return (() => {
+  //     if(document.documentElement.clientWidth > 960){
+  //       screenwidth = (document.documentElement.clientWidth * 668)
+  //     }
+  //   }) 
+  // }
 })
 
 </script>
