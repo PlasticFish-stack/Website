@@ -1,17 +1,8 @@
 <script setup>
 import { onBeforeMount, reactive, ref } from 'vue';
-const barProps = defineProps(['type']);
-let barType = true
-onBeforeMount(() => {
-    if (barProps.type === 'head') {
-    } else if (barProps.type === 'foot') {
-        barType = false
-    } else {
-        throw new Error('type只能传入head或foot')
-    }
-})
-
-
+const searchBarProps = defineProps({
+    type: Boolean
+});
 const page = reactive(['雅江首页', '关于雅江', '线上展厅', '产品中心', '视频中心', '工程案例', '新闻动态', '创意光科技', '联系我们'])
 const pages = reactive([
     {
@@ -94,56 +85,90 @@ const pages = reactive([
 </script>
 
 <template>
-    <div id="navHead" v-if="barType">
-        <img style="width: 300px; height: 60px" src="/src/assets/png/card.png" fit="contain" />
-        <ul>
-            <li v-for="item in page">
-                <div>{{ item }}</div>
-            </li>
-        </ul>
+  <div id="topBar" v-if="searchBarProps.type">
+      <img style="width: 300px; height: 60px" src="/src/assets/png/card.png" fit="contain" />
+        <el-menu mode="horizontal">
+          <el-menu-item v-for="item in page">
+                {{ item }}
+          </el-menu-item>
+        </el-menu>
     </div>
-    <div id="navFoot" v-if="!barType">
-        <img style="width: 300px; height: 60px" src="/src/assets/png/card.png" fit="contain" />
-        <div id="p">
-            <div id="pages" v-for="item in pages">
-                {{ item.title }}
-                <ul>
-                    <li v-for="i in item.context">
-                        {{ i.name }}
-                    </li>
-                </ul>
-            </div>
-        </div>
-        <div id="w">
-            <ul>
-                <li>全国服务热线</li>
-                <li><svg t="1680711595271" class="icon" viewBox="0 0 1024 1024" version="1.1"
-                        xmlns="http://www.w3.org/2000/svg" p-id="2778" width="24" height="24">
-                        <path
-                            d="M704 640c-64 64-64 128-128 128s-128-64-192-128-128-128-128-192 64-64 128-128S256 64 192 64 0 256 0 256c0 128 131.488 387.488 256 512s384 256 512 256c0 0 192-128 192-192S768 576 704 640z"
-                            fill="#9EEB47" p-id="2779"></path>
-                    </svg>
-                    <span>020-86947788</span>
-                </li>
-                <li>
-                    <button>在线客服</button>
-                </li>
-            </ul>
-            <ul id="www">
-                <li>官方微信</li>
-                <li>
-                    <div style="height:100px; width:100px; background:white">
 
+
+    <!-- <div id="navFoot" v-if="!searchBarProps.type">
+                    <img style="width: 300px; height: 60px" src="/src/assets/png/card.png" fit="contain" />
+                    <div id="p">
+                        <div id="pages" v-for="item in pages">
+                            {{ item.title }}
+                            <ul>
+                                <li v-for="i in item.context">
+                                    {{ i.name }}
+                                </li>
+                            </ul>
+                        </div>
                     </div>
-                </li>
-            </ul>        
-        </div>
+                    <div id="w">
+                        <ul>
+                            <li>全国服务热线</li>
+                            <li><svg t="1680711595271" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                                    xmlns="http://www.w3.org/2000/svg" p-id="2778" width="24" height="24">
+                                    <path
+                                        d="M704 640c-64 64-64 128-128 128s-128-64-192-128-128-128-128-192 64-64 128-128S256 64 192 64 0 256 0 256c0 128 131.488 387.488 256 512s384 256 512 256c0 0 192-128 192-192S768 576 704 640z"
+                                        fill="#9EEB47" p-id="2779"></path>
+                                </svg>
+                                <span>020-86947788</span>
+                            </li>
+                            <li>
+                                <button>在线客服</button>
+                            </li>
+                        </ul>
+                        <ul id="www">
+                            <li>官方微信</li>
+                            <li>
+                                <div style="height:100px; width:100px; background:white">
 
-    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div> -->
 </template>
 
 <style lang="scss" scoped>
-#navFoot {
+#topBar {
+    height: 5rem;
+    width: 100%;
+    background-color: black;
+    color: black;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+
+    ul {
+        margin-right: 10%;
+        flex-wrap: nowrap;
+        display: flex;
+
+        li {
+            margin-left: 0.5rem;
+            list-style: none;
+            float: left;
+
+            div {
+                position: relative;
+                top: 50%;
+                transform: translateY(-50%);
+                height: 100%;
+                width: 100px;
+                color: white;
+            }
+        }
+    }
+}
+
+#bottomBar {
     height: 16rem;
     width: 100%;
     background-color: black;
@@ -152,17 +177,19 @@ const pages = reactive([
     flex-wrap: nowrap;
     justify-content: space-between;
     align-items: flex-start;
-    padding-top: 40px;
+
 }
 
 
-#www{
+#www {
     align-items: center;
-    
+
 }
-#w> ul{
+
+#w>ul {
     margin-top: 0px;
 }
+
 #w {
     margin-right: 3%;
     width: 25rem;
@@ -193,7 +220,8 @@ const pages = reactive([
     justify-content: right;
 
 }
-#w>ul>li>button{
+
+#w>ul>li>button {
     background-color: #7bc725;
     color: rgba(255, 255, 255, 0.9);
     border-radius: 25px;
@@ -201,6 +229,7 @@ const pages = reactive([
     width: 120px;
 
 }
+
 #w>ul>li>span {
     font-size: 26px;
     display: block;
@@ -234,40 +263,10 @@ const pages = reactive([
 
 
 
-#navHead {
-    height: 5rem;
-    width: 100%;
-    background-color: black;
-    color: black;
-    display: flex;
-    flex-wrap: nowrap;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 48px;
-}
+
 
 img {
     margin-left: 6%;
     float: left;
 }
-
-#navHead>ul {
-    margin-right: 10%;
-    flex-wrap: nowrap;
-    display: flex;
-}
-
-#navHead>ul>li {
-    margin-left: 0.5rem;
-    list-style: none;
-    float: left;
-}
-
-#navHead>ul>li>div {
-    position: relative;
-    top: 50%;
-    transform: translateY(-50%);
-    height: 100%;
-    width: 100px;
-    color: white;
-}</style>
+</style>

@@ -3,6 +3,7 @@ import { ref, reactive } from 'vue'
 import { ArrowDown , Search } from '@element-plus/icons-vue'
 const link = reactive(['weibo', 'wechat', 'qq', 'twitter', 'facebook', 'youtube'])
 const search = ref('')
+const iconLink = ref('/src/icons/')
 </script>
 
 <template>
@@ -24,7 +25,7 @@ const search = ref('')
     <ul id="link">
       <li v-for="item in link" class="link">
         <a href="">
-          <img :src="'/src/assets/icon/svgicons/' + item + '.svg'" alt="">
+          <img :src="iconLink + item + '.svg'" alt="">
         </a>
         
       </li>
