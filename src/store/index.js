@@ -1,13 +1,14 @@
 import {createStore} from "vuex"
 const Store = createStore({
     state : {
-        windowWidth: '1',
+        windowWidth: '',
+        windowHeight: '',
     },
     mutations: {
-        widthObtain(){
-            window.onresize = () => {
-                state.windowWidth = window.innerWidth + 'px'
-            }
+        Obtain(state, payload){
+            console.log(payload, 'payload');
+            state.windowWidth = payload.width;
+            state.windowHeight = payload.height;
         }
     }
 })

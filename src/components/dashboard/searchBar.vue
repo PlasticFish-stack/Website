@@ -86,7 +86,7 @@ const pages = reactive([
 
 <template>
   <div id="topBar" v-if="searchBarProps.type">
-      <img style="width: 300px; height: 60px" src="/src/assets/png/card.png" fit="contain" />
+      <img style="width: 230px; height: 50px" src="/src/assets/png/card.png" fit="contain" />
         <el-menu mode="horizontal">
           <el-menu-item v-for="item in page">
                 {{ item }}
