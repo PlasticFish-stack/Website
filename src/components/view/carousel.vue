@@ -1,10 +1,9 @@
 <script setup>
-import { computed } from '@vue/reactivity';
-import { reactive, onMounted, watch} from 'vue';
+import { reactive, computed} from 'vue';
 import { useStore } from 'vuex'
 
 const store = useStore();
-let windowWidth = computed(() => store.state.windowWidth);
+const windowWidth = computed(() => store.state.windowWidth);
 const page = reactive([
     {
       id: 0,
@@ -24,23 +23,10 @@ const page = reactive([
       num: 4,
     }
   ])
-let screenwidth = (document.documentElement.clientWidth) / 2.48 + "px"
-onMounted(() => {
-  store.commit('widthObtain')
-  console.log(windowWidth, '123');
-  // window.onresize = () => {
-  //   return (() => {
-  //     if(document.documentElement.clientWidth > 960){
-  //       screenwidth = (document.documentElement.clientWidth * 668)
-  //     }
-  //   }) 
-  // }
-})
-
+let screenWidth = windowWidth.value / 2.48 + "px"
 </script>
-
 <template>
-    <el-carousel trigger="click" :height="screenwidth" class=" carousel">
+    <el-carousel trigger="click" :height="screenWidth">
       <el-carousel-item v-for="item in page" :key="item">
         <img :src="'/src/assets/png/Carousel/' + item.src + '.jpg'" style="height:100%; width:100%; object-fit:fill;"/>
       </el-carousel-item>
@@ -54,7 +40,6 @@ onMounted(() => {
   max-width: 100%;
   width: 100%;
   padding:0px;
-  margin: 0px;
   position: relative;
   z-index: 0;
 }

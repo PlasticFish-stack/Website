@@ -19,7 +19,6 @@ onMounted(() => {
       viewWidth = document.documentElement.clientWidth;
       viewHeight = document.documentElement.clientHeight;
       Obtain();
-      console.log(viewHeight, viewWidth);
     }, 300);
   }
 })
@@ -31,10 +30,11 @@ onDeactivated(() => {
 
 <template>
   <div id="layout">
-    <bar />
-    {{ windowWidth }}
-    <router-view></router-view>
+    <bar/>
+    <router-view />
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+
+</style>

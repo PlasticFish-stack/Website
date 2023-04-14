@@ -1,14 +1,15 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { ArrowDown , Search } from '@element-plus/icons-vue'
+const iconLink = '/src/icons/'
 const link = reactive(['weibo', 'wechat', 'qq', 'twitter', 'facebook', 'youtube'])
 const search = ref('')
-const iconLink = ref('/src/icons/')
+
 </script>
 
 <template>
-  <div id="top">
-    <el-dropdown size="large" id="box">
+  <div id="navgation">
+    <el-dropdown size="large">
       <span class="el-dropdown-link">
         Language
         <el-icon class="el-icon--right">
@@ -39,8 +40,8 @@ const iconLink = ref('/src/icons/')
   </div>
 </template>
 
-<style scoped>
-#top {
+<style lang="scss" scoped>
+#navgation {
   height: 3rem;
   width: 100%;
   background-color: white;
@@ -56,32 +57,28 @@ const iconLink = ref('/src/icons/')
   overflow: hidden;
   z-index: 1;
 }
+#link {
+  width: 280px;
+  margin-left: -20px;
+  margin-right: 0.5rem;
+  li{
+    margin-top: 0.5rem;
+    margin-left: 10px;
+    list-style: none;
+    float: left;
+  }
+}
 .search{
   width: 12rem;
   margin-right: 1.5rem;
 }
-
 :deep(.el-input__wrapper){
   background-color: rgb(207, 207, 207);
   border: 0px;
   border-radius: 40px;
 }
-
 :deep(.el-input__inner){
   text-indent: 9px;
-}
-
-#link {
-  width: 280px;
-  margin-left: -20px;
-  margin-right: 0.5rem;
-}
-
-.link {
-  margin-top: 0.5rem;
-  margin-left: 10px;
-  list-style: none;
-  float: left;
 }
 :deep(.el-dropdown-link) {
   outline: none;

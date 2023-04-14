@@ -1,11 +1,12 @@
 <script setup>
-import { onBeforeMount, reactive, ref } from 'vue';
+import {reactive} from 'vue';
 const searchBarProps = defineProps({
     type: Boolean
 });
-const page = reactive(['雅江首页', '关于雅江', '线上展厅', '产品中心', '视频中心', '工程案例', '新闻动态', '创意光科技', '联系我们'])
-const pages = reactive([
+const page = reactive([
     {
+        title: '雅江首页'
+    },{
         title: '关于雅江',
         context: [{
             name: '企业简介',
@@ -20,7 +21,9 @@ const pages = reactive([
             name: '荣誉资质',
             url: ''
         }]
-    }, {
+    },{
+        title: '线上展厅'
+    },{
         title: '产品中心',
         context: [{
             name: '舞台灯光',
@@ -29,7 +32,7 @@ const pages = reactive([
             name: '建筑照明',
             url: '',
         }]
-    }, {
+    },{
         title: '视频中心',
         context: [{
             name: '舞台灯光',
@@ -44,7 +47,7 @@ const pages = reactive([
             name: '活动视频',
             url: '',
         }]
-    }, {
+    },{
         title: '工程案例',
         context: [{
             name: '舞台灯光',
@@ -53,7 +56,7 @@ const pages = reactive([
             name: '建筑照明',
             url: '',
         }]
-    }, {
+    },{
         title: '新闻动态',
         context: [{
             name: '雅江动态',
@@ -68,7 +71,17 @@ const pages = reactive([
             name: '展会资讯',
             url: '',
         }]
-    }, {
+    },{
+        title: '创意光科技',
+        context:[{
+                name: '雅江杯',
+                url: '',
+            },{
+                name: '高峰论坛',
+                url: '',
+            }
+        ]
+    },{
         title: '联系我们',
         context: [{
             name: '联系我们',
@@ -85,87 +98,50 @@ const pages = reactive([
 </script>
 
 <template>
-  <div id="topBar" v-if="searchBarProps.type">
-      <img style="width: 230px; height: 50px" src="/src/assets/png/card.png" fit="contain" />
-        <el-menu mode="horizontal">
-          <el-menu-item v-for="item in page">
-                {{ item }}
-          </el-menu-item>
-        </el-menu>
-    </div>
+    <el-menu mode="horizontal" v-if="searchBarProps.type" class="menu" text-color="white" background-color="black" active-text-color="#95d475">
+        <img style="width: 230px; height: 50px" src="/src/assets/png/card.png" fit="contain" />
+        <div class="flex-grow" />
+        <template v-for="item,index in page" :key="index">
+            <el-menu-item :index="index+''" v-if="!item.context">{{item.title}}</el-menu-item>
+            <el-sub-menu :index="index+''"  v-if="item.context" :popper-append-to-body="fasle" :popper-offset="12">
+                <template #title>{{ item.title }}</template>
+                <el-menu-item v-for="team, teammate in item.context" :index="index+ '-' + teammate">
+                    {{ team.name }}
+                </el-menu-item>
+            </el-sub-menu>
+        </template>
+        <div id="placeholder" />
+    </el-menu>
 
 
-    <!-- <div id="navFoot" v-if="!searchBarProps.type">
-                    <img style="width: 300px; height: 60px" src="/src/assets/png/card.png" fit="contain" />
-                    <div id="p">
-                        <div id="pages" v-for="item in pages">
-                            {{ item.title }}
-                            <ul>
-                                <li v-for="i in item.context">
-                                    {{ i.name }}
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div id="w">
-                        <ul>
-                            <li>全国服务热线</li>
-                            <li><svg t="1680711595271" class="icon" viewBox="0 0 1024 1024" version="1.1"
-                                    xmlns="http://www.w3.org/2000/svg" p-id="2778" width="24" height="24">
-                                    <path
-                                        d="M704 640c-64 64-64 128-128 128s-128-64-192-128-128-128-128-192 64-64 128-128S256 64 192 64 0 256 0 256c0 128 131.488 387.488 256 512s384 256 512 256c0 0 192-128 192-192S768 576 704 640z"
-                                        fill="#9EEB47" p-id="2779"></path>
-                                </svg>
-                                <span>020-86947788</span>
-                            </li>
-                            <li>
-                                <button>在线客服</button>
-                            </li>
-                        </ul>
-                        <ul id="www">
-                            <li>官方微信</li>
-                            <li>
-                                <div style="height:100px; width:100px; background:white">
-
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-
-                </div> -->
 </template>
 
 <style lang="scss" scoped>
-#topBar {
+#placeholder{
+    margin-right: 20px;
+}
+.menu {
     height: 5rem;
     width: 100%;
-    background-color: black;
-    color: black;
-    display: flex;
-    flex-wrap: nowrap;
-    justify-content: space-between;
+    margin: 0;
+    border-bottom: 0px;
     align-items: center;
-
-    ul {
-        margin-right: 10%;
-        flex-wrap: nowrap;
-        display: flex;
-
-        li {
-            margin-left: 0.5rem;
-            list-style: none;
-            float: left;
-
-            div {
-                position: relative;
-                top: 50%;
-                transform: translateY(-50%);
-                height: 100%;
-                width: 100px;
-                color: white;
-            }
-        }
-    }
+}
+:global(.el-menu--popup){
+    min-width: 0px;
+    width: 120px;
+}
+:global(.el-popper.is-light){
+    border: 0px
+}
+:global(.el-menu--horizontal){
+    border-bottom: 0px;
+}
+:global(.el-menu-item){
+    justify-content: center;
+}
+.flex-grow {
+    flex-grow: 1;
 }
 
 #bottomBar {
