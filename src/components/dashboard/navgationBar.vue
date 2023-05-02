@@ -42,7 +42,7 @@ const search = ref('')
 
 <style lang="scss" scoped>
 #navgation {
-  height: 3rem;
+  height: 2.5rem;
   width: 100%;
   background-color: white;
   color: black;

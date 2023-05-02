@@ -1,17 +1,16 @@
 <script setup>
   import navgationBar from "@/components/dashboard/navgationBar.vue";
-  import searchBar from "@/components/dashboard/searchBar.vue"
-  const bool = true
+  import menuBar from "@/components/dashboard/menuBar.vue"
 </script>
 
 <template>
     <navgationBar/>
-    <searchBar :type="bool" class="searchbar"/>
+    <menuBar :type="true" id="menu" />
 </template>
 
 <style scoped>
-.searchbar{
+#menu{
   position: relative;
-  top: 48px;
+  top: 40px;
 }
 </style>

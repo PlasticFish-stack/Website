@@ -5,7 +5,7 @@ let showBool = true
 if (props.type != 'video') {
   showBool = false
 }
-const num = ref(4);
+const num = ref(14);
 onMounted(() => {
   if (num.value < 5) {
     document.getElementById('swiper').style.justifyContent = 'center';
@@ -50,7 +50,7 @@ function changePosition(item) {
         <el-card :body-style="{ padding: '0px' }" class="swiper_box" v-for="item in num" :key="item">
           <img src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
             class="image" />
-          <div style="padding: 0px">
+          <div style="padding: 10px">
             <span>{{ item }}</span>
           </div>
         </el-card>
@@ -73,20 +73,22 @@ function changePosition(item) {
 #ul_s {
   display: flex;
   position: absolute;
-  margin-top: -50px;
+  margin-top: -20px;
   margin-left: 8px;
   left: 50%;
   transform: translateX(-50%);
-  padding-right: 75px;
+  padding-right: 25px;
+  justify-content: center;
 }
 
 #li_s>button {
-  height: 15px;
-  width: 15px;
+  height: 10px;
+  width: 10px;
   border-radius: 45px;
   padding: 0px;
   background-color: #909399;
   flex-shrink: 0;
+  margin-left: -15px;
 }
 
 #li_s>button:hover {
@@ -118,7 +120,7 @@ function changePosition(item) {
 }
 
 #swiper {
-  height: 400px;
+  height: 440px;
   width: 1330px;
   background-color: transparent;
   overflow: hidden;
@@ -127,7 +129,7 @@ function changePosition(item) {
 }
 
 .swiper_box {
-  margin-top: -60px;
+  margin-top: -40px;
   height: 330px;
   width: 320px;
   background-color: white;
@@ -157,7 +159,7 @@ function changePosition(item) {
   height: 60px;
   width: 100%;
   background-color: rgba(0, 0, 0, 0.8);
-  margin-top: -66px;
+  margin-top: -62px;
   color: white;
   display: flex;
   align-items: center;
@@ -168,7 +170,7 @@ function changePosition(item) {
 
 .centerVideo {
   width: 100%;
-  background: url("src/assets/png/Background/bg2.jpg") no-repeat;
+  background: url("src/assets/Background/bg2.jpg") no-repeat;
   background-size: cover;
   position: relative;
   color: black;
@@ -176,7 +178,7 @@ function changePosition(item) {
 
 .centerNews {
   width: 100%;
-  background: url("src/assets/png/Background/bg3.jpg") no-repeat;
+  background: url("src/assets/Background/bg3.jpg") no-repeat;
   background-size: cover;
   position: relative;
   color: black;
@@ -212,6 +214,7 @@ function changePosition(item) {
   display: inline-block;
   font-size: 24px;
   margin-top: 45px;
+  padding-bottom: 10px;
   color: #606266;
 }
 
@@ -223,6 +226,7 @@ function changePosition(item) {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding-bottom: 20px;
 }
 
 #title::before {

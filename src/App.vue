@@ -1,11 +1,11 @@
 <script setup>
 import bar from '@/components/dashboard/index.vue'
+import menuBar from "@/components/dashboard/menuBar.vue"
 import { onMounted, computed, onDeactivated} from 'vue'
 import { useStore } from 'vuex'
 import { debounce } from '@/utils/index.js'
 
 const store = useStore();
-const windowWidth = computed(() => store.state.windowWidth);
 let viewWidth = document.documentElement.clientWidth;
 let viewHeight = document.documentElement.clientHeight;
 const Obtain = () => store.commit('Obtain', {
@@ -32,6 +32,7 @@ onDeactivated(() => {
   <div id="layout">
     <bar/>
     <router-view />
+    <menuBar :type="false"></menuBar>
   </div>
 </template>
 
