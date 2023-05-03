@@ -1,6 +1,5 @@
 <script setup>
-import bar from '@/components/dashboard/index.vue'
-import menuBar from "@/components/dashboard/menuBar.vue"
+import navgation from '@/components/navgation/index.vue'
 import { onMounted, computed, onDeactivated} from 'vue'
 import { useStore } from 'vuex'
 import { debounce } from '@/utils/index.js'
@@ -30,9 +29,8 @@ onDeactivated(() => {
 
 <template>
   <div id="layout">
-    <bar/>
+    <navgation></navgation>
     <router-view />
-    <menuBar :type="false"></menuBar>
   </div>
 </template>
 

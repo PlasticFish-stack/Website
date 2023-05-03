@@ -23,10 +23,10 @@ const page = reactive([
     num: 4,
   }
 ])
-let screenWidth = windowWidth / 2.48 + "px"
+let screenHeight = windowWidth / 2.48 + "px"
 </script>
 <template>
-  <el-carousel trigger="click" :height="screenWidth">
+  <el-carousel trigger="click" :height="screenHeight">
     <el-carousel-item v-for="item in page" :key="item">
       <img :src="'/src/assets/Carousel/' + item.src + '.jpg'" style="height:100%; width:100%; object-fit:fill;" />
     </el-carousel-item>

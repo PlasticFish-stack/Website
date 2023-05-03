@@ -106,7 +106,7 @@ if (!searchBarProps.type) {
 
 <template>
     <div>
-        <el-menu mode="horizontal" v-if="searchBarProps.type" class="menu" text-color="white" background-color="black"
+        <el-menu mode="horizontal" v-if="searchBarProps.type" class="menu" text-color="white" background-color="#000000"
             active-text-color="#95d475">
             <img style="width: 230px; height: 50px" src="/src/assets/card.png" fit="contain" />
             <div class="flex-grow" />
@@ -174,7 +174,7 @@ if (!searchBarProps.type) {
 #bottomMenu {
     height: 17rem;
     width: 100%;
-    background-color: black;
+    background-color: #000000;
     display: flex;
     justify-content: space-between;
     padding-top: 40px;

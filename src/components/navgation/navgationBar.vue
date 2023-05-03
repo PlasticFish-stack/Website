@@ -1,60 +1,47 @@
 <script setup>
 import { ref, reactive } from 'vue'
-import { ArrowDown , Search } from '@element-plus/icons-vue'
-const iconLink = '/src/icons/'
-const link = reactive(['weibo', 'wechat', 'qq', 'twitter', 'facebook', 'youtube'])
-const search = ref('')
-
 </script>
 
 <template>
   <div id="navgation">
-    <el-dropdown size="large">
-      <span class="el-dropdown-link">
-        Language
-        <el-icon class="el-icon--right">
-          <arrow-down />
-        </el-icon>
-      </span>
-      <template #dropdown>
-        <el-dropdown-menu>
-          <el-dropdown-item>中文</el-dropdown-item>
-          <el-dropdown-item>English</el-dropdown-item>
-        </el-dropdown-menu>
-      </template>
-    </el-dropdown>
-    <ul id="link">
+    <img style="width: 230px; height: 50px" src="/src/assets/card.png" fit="contain" />
+    <!-- <ul id="link">
       <li v-for="item in link" class="link">
         <a href="">
           <img :src="iconLink + item + '.svg'" alt="">
         </a>
         
       </li>
+    </ul> -->
+    <ul id="lang">
+      <li>简</li>
+      <li>繁</li>
+      <li>EN</li>
     </ul>
-    <el-input
-        v-model="search"
-        placeholder="输入关键字"
-        :suffix-icon="Search"
-        class="w-50 m-2 search"
-    />
   </div>
 </template>
 
 <style lang="scss" scoped>
+#lang{
+  display: flex;
+  margin-right: 20px;
+  li{
+    margin-right: 10px;
+  }
+}
 #navgation {
-  height: 2.5rem;
-  width: 100%;
+  height: 4rem;
+  width: 1200px;
   background-color: white;
-  color: black;
-  position: fixed;
+  color: white;
+  position: relative;
   top: 0%;
   left: 50%;
   transform: translate(-50%);
   display: flex;
   flex-wrap: nowrap;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
-  overflow: hidden;
   z-index: 1;
 }
 #link {
