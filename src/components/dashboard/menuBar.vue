@@ -108,7 +108,7 @@ if (!searchBarProps.type) {
     <div>
         <el-menu mode="horizontal" v-if="searchBarProps.type" class="menu" text-color="white" background-color="#000000"
             active-text-color="#95d475">
-            <img style="width: 230px; height: 50px" src="/src/assets/card.png" fit="contain" />
+            
             <div class="flex-grow" />
             <template v-for="item, index in state" :key="index">
                 <el-menu-item :index="index + ''" v-if="!item.context">{{ item.title }}</el-menu-item>

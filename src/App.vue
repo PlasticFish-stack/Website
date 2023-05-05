@@ -7,7 +7,7 @@ import { debounce } from '@/utils/index.js'
 const store = useStore();
 let viewWidth = document.documentElement.clientWidth;
 let viewHeight = document.documentElement.clientHeight;
-const Obtain = () => store.commit('Obtain', {
+const Obtain = () => store.commit('obtainSize', {
   width: viewWidth,
   height: viewHeight
 });

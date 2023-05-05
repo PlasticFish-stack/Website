@@ -1,15 +1,16 @@
 import {createStore} from "vuex"
-const Store = createStore({
-    state : {
-        windowWidth: '',
-        windowHeight: '',
-    },
-    mutations: {
-        Obtain(state, payload){
-            console.log(payload, 'payload');
-            state.windowWidth = payload.width;
-            state.windowHeight = payload.height;
-        }
+import state from './state'
+import getters from './getters'
+import actions from './actions'
+import mutations from './mutations'
+import menu from './modules/menu.js'
+
+export default createStore({
+    state,
+    getters,
+    mutations,
+    actions,
+    modules:{
+        menu
     }
 })
-export default Store
