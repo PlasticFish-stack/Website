@@ -50,6 +50,7 @@ let screenHeight = windowWidth / 2.48 + "px"
 :deep(.el-carousel__button) {
   height: 15px;
   width: 15px;
+  border-radius: 90%;
   border: 2px solid white;
   background-color: transparent;
   outline: none;

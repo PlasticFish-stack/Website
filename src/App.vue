@@ -29,11 +29,14 @@ onDeactivated(() => {
 
 <template>
   <div id="layout">
-    <navgation></navgation>
+    <navgation id="nav"></navgation>
     <router-view />
   </div>
 </template>
 
 <style scoped>
-
+#nav{
+  position: relative;
+  z-index: 1;
+}
 </style>
