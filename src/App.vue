@@ -18,7 +18,7 @@ onMounted(() => {
       viewWidth = document.documentElement.clientWidth;
       viewHeight = document.documentElement.clientHeight;
       Obtain();
-    }, 300);
+    }, 200);
   }
 })
 onDeactivated(() => {

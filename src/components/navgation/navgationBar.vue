@@ -16,12 +16,17 @@ function deform(index) {
     stretch.state[index] = true;
   }
 }
-function deformBox(){
-  if(stretch.bool){
+function deformBox() {
+  if (stretch.bool) {
     stretch.bool = false
-  }else{
+  } else {
     stretch.bool = true
   }
+}
+
+function leaveTo(el, done) {
+  console.log(el);
+  console.log(done);
 }
 </script>
 
@@ -29,11 +34,18 @@ function deformBox(){
   <div id="navgation">
     <img style="width: 230px; height: 50px" src="/src/assets/card1.png" fit="contain" />
     <div id="menu" @mouseenter="deformBox" @mouseleave="deformBox">
-      <div id="menu_child" v-for="value, key, index in menu" @mouseenter="deform(index)" @mouseleave="deform(index)">
-        <span>{{ value.title }}</span>
-        <div v-show="stretch.state[index]" v-for="item in value.child">
-          <span>{{ item.title }}</span>
-        </div>
+      <div id="menu_child" v-for="value, key, index in menu" @mouseenter="deform(index)" @mouseleave="deform(index)"
+        class="name" :key="value">
+        <span id="title" :key="value.title">{{ value.title }}</span>
+        <Transition name="underline">
+          <div v-show="stretch.state[index]" :key="index" class="underline"></div>
+        </Transition>
+        <TransitionGroup name="list" tag="div" class="box">
+          <div v-show="stretch.state[index]" v-for="item in value.child" :key="item" class="list">
+            <a href=""  id="childTitle"><span>{{ item.title }}</span></a>
+            
+          </div>
+        </TransitionGroup>
       </div>
     </div>
     <ul id="lang">
@@ -45,7 +57,6 @@ function deformBox(){
   <Transition name="stretch">
     <div class="stretch" v-show="stretch.bool"></div>
   </Transition>
-  
 </template>
 
 <style lang="scss" scoped>
@@ -60,33 +71,57 @@ function deformBox(){
   justify-content: space-between;
   align-items: center;
   z-index: 1;
+
   img {
     margin-left: 20px;
   }
+
   #menu {
+
     display: flex;
     justify-content: center;
     align-items: center;
     height: 80px;
     font-weight: 600;
-    color: rgba(0, 0, 0, 0.9);
+    color: rgba(0, 0, 0, 0.8);
+
     #menu_child {
-      margin-top: -15px;
       margin-right: 30px;
-      height: 0px;
+      height: 48px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      div{
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        span{
-          margin-top: 35px;
+      padding-top: 32px;
+      .underline {
+        height: 5px;
+        width: 100%;
+        background-color: #43A047;
+        margin-top: 8px;
+      }
+
+      .box {
+        position: absolute;
+        margin-top: 20px;
+
+        .list {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+
+          #childTitle {
+            color: rgba(0, 0, 0, 0.6);
+            margin-top: 32px;
+          }
+
+          #childTitle:hover {
+            color: rgba(0, 0, 0, 0.8);
+          }
         }
       }
+
     }
   }
+
   #lang {
     display: flex;
     align-items: center;
@@ -98,34 +133,54 @@ function deformBox(){
     }
   }
 }
+
 .stretch {
   position: absolute;
-  height: 300px;
+  height: 290px;
   width: 100%;
   background-color: white;
   transform: translateY(-80px);
+  box-shadow: var(--el-box-shadow-dark)
 }
-.stretch-enter-active{
-  animation: bounce-in 0.5s;
-}
-.stretch-leave-active {
-  animation: bounce-in 0.5s reverse;
-}
-.stretch-enter-to{
-  
-}
-.stretch-enter-from{
-  
-}
-.stretch-leave-to {
 
+
+
+.underline-enter-active {
+  animation: fadeIn 1s cubic-bezier(0.55, 0, 0.1, 1);
 }
+.underline-leave-active{
+  animation: fadeOut 0.6s cubic-bezier(0.55, 0, 0.1, 1);
+}
+
+.list-enter-active {
+  animation: fadeInLeft 1s cubic-bezier(0.55, 0, 0.1, 1);
+}
+
+.list-leave-active {
+  animation: fadeOutUp 0.5s;
+}
+
+.stretch-enter-active {
+  animation: bounce-in 0.3s cubic-bezier(0.55, 0, 0.1, 1);
+}
+
+.stretch-leave-active {
+  animation: bounce-in 0.4s cubic-bezier(0.55, 0, 0.1, 1) reverse;
+}
+
 @keyframes bounce-in {
   0% {
-    transform:  translateY(-500px);
+    transform: translateY(-500px);
+    box-shadow: none;
   }
+
+  75% {
+    box-shadow: none;
+  }
+
   100% {
-    transform:  translateY(-80px);
+    transform: translateY(-80px);
+
   }
 }
 </style>

@@ -1,9 +1,9 @@
 <script setup>
-import { reactive, computed, watch } from 'vue';
+import { reactive, computed, watch ,ref} from 'vue';
 import { useStore } from 'vuex'
 
 const store = useStore();
-const windowWidth = store.state.windowWidth
+const windowWidth = computed(() => store.state.windowWidth);
 const page = reactive([
   {
     id: 0,
@@ -23,10 +23,10 @@ const page = reactive([
     num: 4,
   }
 ])
-let screenHeight = windowWidth / 2.48 + "px"
+let screenHeight = computed(()=> (windowWidth.value / 2.48));
 </script>
 <template>
-  <el-carousel trigger="click" :height="screenHeight">
+  <el-carousel trigger="click" :height="screenHeight + 'px'">
     <el-carousel-item v-for="item in page" :key="item">
       <img :src="'/src/assets/Carousel/' + item.src + '.jpg'" style="height:100%; width:100%; object-fit:fill;" />
     </el-carousel-item>

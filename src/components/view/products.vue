@@ -7,20 +7,19 @@
     <div id="main">
       <div id="box_card">
         <span>PRODUCTS</span>
-        <button>查看详情</button>
       </div>
-      <div id="box_img">
+      <!-- <div id="box_img">
         <img src="src\assets\Page\silverstar.png" alt="" srcset="">
         <el-divider direction="vertical" />
         <img src="src\assets\Page\arctik.png" alt="" srcset="">
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 #box {
-  height: 500px;
+  height: 420px;
   width: 100%;
   display: flex;
   justify-content: center;
@@ -30,24 +29,20 @@
 
 #main {
   height: 295px;
-  width: 1380px;
+  width: 1200px;
   background-color: white;
   display: flex;
-  flex-wrap: nowrap;
-  justify-content: center;
-  border-bottom: 1px solid var(--el-border-color);
   box-shadow: var(--el-box-shadow-dark);
   border-radius: 6px;
-
+  overflow: hidden;
   #box_card {
-    height: 296px;
-    width: 361px;
-    background-image: url(src/assets/Background/bg1.jpg);
+    height: 100%;
+    width: 100%;
+    background:rgba(0, 0, 0, 0.6);
     background-repeat: no-repeat;
     background-size: cover;
-    border-radius: 6px;
-    margin-top: 0px;
-    flex-shrink: 0;
+    text-align: center;
+
 
     span {
       font-size: 25px;
@@ -61,10 +56,11 @@
       font-size: 40px;
       font-weight: bolder;
       display: block;
-      padding-top: 10px;
+      padding-top: 30px;
       padding-bottom: 5px;
     }
   }
+  
   #box_img {
     width: 100%;
     color: black;
