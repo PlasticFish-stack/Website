@@ -12,6 +12,7 @@
     "@element-plus/icons": "^0.0.11",
     "animate.css": "^4.1.1",
     "element-plus": "^2.3.0",
+    "gsap": "^3.11.5",
     "reset-css": "^5.0.1",
     "vue": "^3.2.45",
     "vue-router": "^4.0.13",

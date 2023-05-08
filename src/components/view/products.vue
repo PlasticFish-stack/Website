@@ -1,18 +1,35 @@
 <script setup>
+import { reactive } from 'vue';
+import {gsap} from 'gsap'
 
+const productState = reactive({
+  showBool: false
+});
+const productScale = (bool) => {
+  console.log(bool);
+  console.log(productState.showBool);
+  productState.showBool = bool
+}
+gsap.timeline({
+  ScrollTrigger: {
+        trigger: ".main",
+        start: "top top",
+        end: "bottom bottom",
+        scrub: 1
+    }
+  }).fromTo(".box_card", { y: 0 }, { y: "-75%" }, 0);
 </script>
 
 <template>
   <div id="box">
-    <div id="main">
-      <div id="box_card">
-        <span>PRODUCTS</span>
-      </div>
-      <!-- <div id="box_img">
-        <img src="src\assets\Page\silverstar.png" alt="" srcset="">
-        <el-divider direction="vertical" />
-        <img src="src\assets\Page\arctik.png" alt="" srcset="">
-      </div> -->
+    <div class="main" @mouseenter="productScale(true)" @mouseleave="productScale(false)">
+        <div class="box_card" >
+          <span>PRODUCTS</span>
+        </div>
+        <div class="box_products">
+          <img src="src\assets\Page\silverstar.png">
+          <img src="src\assets\Page\arctik.png">
+        </div>
     </div>
   </div>
 </template>
@@ -25,9 +42,10 @@
   justify-content: center;
   align-items: center;
   background-color: white;
+
 }
 
-#main {
+.main {
   height: 295px;
   width: 1200px;
   background-color: white;
@@ -35,14 +53,16 @@
   box-shadow: var(--el-box-shadow-dark);
   border-radius: 6px;
   overflow: hidden;
-  #box_card {
+  position: relative;
+
+  .box_card {
     height: 100%;
     width: 100%;
-    background:rgba(0, 0, 0, 0.6);
+    background-image: linear-gradient(0deg, #005042, #1b735d, #339979, #4ac096);
     background-repeat: no-repeat;
     background-size: cover;
     text-align: center;
-
+    border-radius: 6px;
 
     span {
       font-size: 25px;
@@ -60,56 +80,35 @@
       padding-bottom: 5px;
     }
   }
-  
-  #box_img {
-    width: 100%;
-    color: black;
-    flex-wrap: nowrap;
+
+  .box_products {
+    transform: translateY(400px);
+    border-radius: 6px;
+    height: 295px;
+    width: 1200px;
+    position: absolute;
+    background-color: black;
+    display: flex;
     overflow: hidden;
 
     img {
-      height: 72%;
-      width: 49%;
-      position: relative;
-      top: 15%;
+
+      width: 50%;
+      object-fit: cover;
     }
   }
-  button {
-    height: 45px;
-    width: 150px;
-    background-color: white;
-    border-radius: 25px;
-    color: #a0c836;
-    outline: none;
-    margin-top: 15px;
-  }
+}
+.card-enter-active {
+  animation: slideInDown 1s cubic-bezier(0.55, 0, 0.1, 1);
+}
+.card-leave-active{
+  animation: slideOutUp 1s cubic-bezier(0.55, 0, 0.1, 1);
+}
+.products-enter-active {
+  animation: fadeIn 1s cubic-bezier(0.55, 0, 0.1, 1);
+}
+.products-leave-active{
+  animation: fadeOut 0.6s cubic-bezier(0.55, 0, 0.1, 1);
 }
 
-:deep(.el-divider--vertical) {
-  height: 9em;
-  border-left: 2px var(--el-border-color) var(--el-border-style);
-  z-index: 1;
-  position: relative;
-  top: 50%;
-  transform: translateY(-140%);
-}
-
-
-
-@keyframes bigbig {
-  to {
-    transform: scale(1.04);
-  }
-}
-
-#box_card>button:hover {
-  animation: bigbig 0.2s forwards !important;
-  border: 0;
-}
-
-#box_img>img:hover {
-  height: 72%;
-  width: 49%;
-  position: relative;
-  animation: bigbig 0.2s forwards !important;
-}</style>
+</style>
