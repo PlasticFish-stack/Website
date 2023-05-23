@@ -1,6 +1,7 @@
 <script setup>
 import carousel from '@/components/view/carousel.vue'
 import products from '@/components/view/products.vue'
+
 </script>
 
 <template>

@@ -10,6 +10,7 @@ import navgationBar from './navgationBar.vue'
 
 <style lang="scss" scoped>
 div{
+  height: 5rem;
   width: 100%;
   background-color: white;
 }

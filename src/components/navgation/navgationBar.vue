@@ -62,9 +62,9 @@ function leaveTo(el, done) {
 <style lang="scss" scoped>
 #navgation {
   height: 5rem;
-  width: 1200px;
+  width: 1280px;
   color: rgba(0, 0, 0, 0.9);
-  position: relative;
+  position: fixed;
   left: 50%;
   transform: translate(-50%);
   display: flex;
@@ -136,7 +136,7 @@ function leaveTo(el, done) {
 
 .stretch {
   position: absolute;
-  height: 290px;
+  height: 25rem;
   width: 100%;
   background-color: white;
   transform: translateY(-80px);
