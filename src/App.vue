@@ -1,6 +1,5 @@
 <script setup>
 import navgation from '@/components/navgation/index.vue'
-import navgationBottom from '@/components/navgation/navgationBarBottom.vue'
 import { onMounted, computed, onDeactivated} from 'vue'
 import { useStore } from 'vuex'
 import { debounce } from '@/utils/index.js'
@@ -33,7 +32,6 @@ onDeactivated(() => {
   <div id="layout">
     <router-view />
   </div>
-  <navgationBottom></navgationBottom>
 </template>
 
 <style scoped>

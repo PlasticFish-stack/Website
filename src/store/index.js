@@ -3,7 +3,7 @@ import state from './state'
 import getters from './getters'
 import actions from './actions'
 import mutations from './mutations'
-import menu from './modules/menu.js'
+import menu from './modules/menu'
 
 export default createStore({
     state,

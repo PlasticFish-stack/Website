@@ -54,7 +54,8 @@ let screenHeight = computed(()=> (windowWidth.value / 2.48));
   border: 2px solid white;
   background-color: transparent;
   outline: none;
-  margin-left: 15px;
+  margin-left: 8px;
+  margin-right: 8px;
 }
 
 :deep(.is-active>.el-carousel__button) {

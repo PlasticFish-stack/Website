@@ -1,7 +1,10 @@
 <script setup>
 import { computed, reactive, toRaw } from 'vue';
 import { useStore } from 'vuex';
+import { useI18n } from 'vue-i18n'
 const store = useStore();
+const lang = useI18n();
+console.log(lang);
 const menu = toRaw(computed(() => store.getters.menubar).value);//Navgationbar内的菜单列名
 //菜单项展开
 let stretch = reactive({
@@ -63,7 +66,7 @@ function leaveTo(el, done) {
 #navgation {
   height: 5rem;
   width: 1280px;
-  color: rgba(0, 0, 0, 0.9);
+  color: #2b312c;
   position: fixed;
   left: 50%;
   transform: translate(-50%);
@@ -83,7 +86,7 @@ function leaveTo(el, done) {
     align-items: center;
     height: 80px;
     font-weight: 600;
-    color: rgba(0, 0, 0, 0.8);
+    color: #2b312c;
 
     #menu_child {
       margin-right: 30px;
@@ -95,7 +98,7 @@ function leaveTo(el, done) {
       .underline {
         height: 5px;
         width: 100%;
-        background-color: #43A047;
+        background-color: #45b787;
         margin-top: 8px;
       }
 
@@ -109,7 +112,7 @@ function leaveTo(el, done) {
           align-items: center;
 
           #childTitle {
-            color: rgba(0, 0, 0, 0.6);
+            color: #6E7783;
             margin-top: 32px;
           }
 
@@ -138,7 +141,7 @@ function leaveTo(el, done) {
   position: absolute;
   height: 25rem;
   width: 100%;
-  background-color: white;
+  background-color: #fffef9;
   transform: translateY(-80px);
   box-shadow: var(--el-box-shadow-dark)
 }

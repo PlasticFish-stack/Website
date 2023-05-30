@@ -1,13 +1,14 @@
 <script setup>
-import carousel from '@/components/view/carousel.vue'
-import products from '@/components/view/products.vue'
-
+import carousel from '@/views/home/carousel.vue'
+import products from '@/views/home/products.vue'
+import card from '@/views/home/card.vue'
 </script>
 
 <template>
   <div class="view">
     <carousel></carousel>
     <products></products>
+    <!-- <card></card> -->
   </div>
 </template>
 
