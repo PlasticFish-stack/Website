@@ -1,10 +1,19 @@
 <script setup>
-import { computed, reactive, toRaw } from 'vue';
+import { computed, reactive, toRaw, onMounted} from 'vue';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n'
 const store = useStore();
-const lang = useI18n();
-console.log(lang);
+const {locale, t, tm} = useI18n();
+let language = toRaw(tm('navbar'));
+const changeLang = (l) => {
+  if(locale.value == l){
+    return
+  }else{
+    locale.value = l;
+    localStorage.setItem('locale', l);
+    language = toRaw(tm('navbar'));
+  }
+}
 const menu = toRaw(computed(() => store.getters.menubar).value);//Navgationbar内的菜单列名
 //菜单项展开
 let stretch = reactive({
@@ -26,18 +35,22 @@ function deformBox() {
     stretch.bool = true
   }
 }
-
-function leaveTo(el, done) {
-  console.log(el);
-  console.log(done);
-}
+onMounted(() => {
+  if(!localStorage.getItem('locale')){
+    return
+  }else{
+    locale.value = localStorage.getItem('locale')
+  }
+  language = toRaw(tm('navbar'));
+})
 </script>
 
 <template>
   <div id="navgation">
+    {{  locale.value }}
     <img style="width: 230px; height: 50px" src="/src/assets/card1.png" fit="contain" />
     <div id="menu" @mouseenter="deformBox" @mouseleave="deformBox">
-      <div id="menu_child" v-for="value, key, index in menu" @mouseenter="deform(index)" @mouseleave="deform(index)"
+      <div id="menu_child" v-for="value, key, index in language" @mouseenter="deform(index)" @mouseleave="deform(index)"
         class="name" :key="value">
         <span id="title" :key="value.title">{{ value.title }}</span>
         <Transition name="underline">
@@ -46,15 +59,17 @@ function leaveTo(el, done) {
         <TransitionGroup name="list" tag="div" class="box">
           <div v-show="stretch.state[index]" v-for="item in value.child" :key="item" class="list">
             <a href=""  id="childTitle"><span>{{ item.title }}</span></a>
-            
           </div>
         </TransitionGroup>
       </div>
     </div>
-    <ul id="lang">
-      <li>简</li>
-      <li>繁</li>
-      <li>EN</li>
+    
+    <ul id="lang">      
+      <li :class="locale == 'zh' ? 'selectLang' : '' " @click="changeLang('zh')">简</li>
+      <li>/</li>
+      <li :class="locale == 'hk' ? 'selectLang' : '' " @click="changeLang('hk')">繁</li>
+      <li>/</li>
+      <li :class="locale == 'en' ? 'selectLang' : '' " @click="changeLang('en')">EN</li>
     </ul>
   </div>
   <Transition name="stretch">
@@ -130,9 +145,12 @@ function leaveTo(el, done) {
     align-items: center;
     margin-right: 20px;
     font-weight: 600;
-
+    color: #6E7783;
+    .selectLang{
+      color: #2b312c;
+    }
     li {
-      margin-right: 15px;
+      margin-right: 4px;
     }
   }
 }

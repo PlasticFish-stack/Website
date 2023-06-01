@@ -15,6 +15,7 @@ const i18n = createI18n({
     hk : {
       ...HK
     }
-  }
+  },
+  fallbackLocale: ['hk', 'en']
 })
 export default i18n
