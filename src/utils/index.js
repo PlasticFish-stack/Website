@@ -1,5 +1,6 @@
-let time = null;
+
 export const debounce = (fn, delay) => {
+  let time = null;
   if(time){
     clearTimeout(time)
   }
@@ -8,8 +9,9 @@ export const debounce = (fn, delay) => {
   }, delay);
 }
 // 节流
-let flag = true
+
 export const throttle = (fn, delay) => {
+  let flag = true
   if(flag) {
     setTimeout(() => {
       console.log('触发点击')

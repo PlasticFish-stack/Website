@@ -4,6 +4,8 @@ import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n'
 const store = useStore();
 const {locale, t, tm} = useI18n();
+
+
 let language = toRaw(tm('navbar'));
 const changeLang = (l) => {
   if(locale.value == l){
@@ -21,14 +23,14 @@ let stretch = reactive({
   bool: false
 })
 stretch.state = Object.keys(menu).map((item) => false);
-function deform(index) {
+const deform = (index) => {
   if (stretch.state[index]) {
     stretch.state[index] = false;
   } else {
     stretch.state[index] = true;
   }
 }
-function deformBox() {
+const deformBox = () => {
   if (stretch.bool) {
     stretch.bool = false
   } else {
@@ -36,6 +38,7 @@ function deformBox() {
   }
 }
 onMounted(() => {
+  console.log(document.getElementById('navgation').style.clientheight);
   if(!localStorage.getItem('locale')){
     return
   }else{
@@ -65,11 +68,11 @@ onMounted(() => {
     </div>
     
     <ul id="lang">      
-      <li :class="locale == 'zh' ? 'selectLang' : '' " @click="changeLang('zh')">简</li>
+      <li :class="locale == 'zh' ? 'selectLang' : '' "  class="pointer" @click="changeLang('zh')">简</li>
       <li>/</li>
-      <li :class="locale == 'hk' ? 'selectLang' : '' " @click="changeLang('hk')">繁</li>
+      <li :class="locale == 'hk' ? 'selectLang' : '' "  class="pointer" @click="changeLang('hk')">繁</li>
       <li>/</li>
-      <li :class="locale == 'en' ? 'selectLang' : '' " @click="changeLang('en')">EN</li>
+      <li :class="locale == 'en' ? 'selectLang' : '' "  class="pointer" @click="changeLang('en')">EN</li>
     </ul>
   </div>
   <Transition name="stretch">
@@ -146,8 +149,21 @@ onMounted(() => {
     margin-right: 20px;
     font-weight: 600;
     color: #6E7783;
+    .pointer{
+      cursor: pointer;
+    }
     .selectLang{
       color: #2b312c;
+      position: relative;
+    }
+    .selectLang::after{
+      content: '';
+      position: absolute;
+      height: 3px;
+      width: 120%;
+      background-color: #45b787;
+      margin-top: 20px;
+      left: -10%;
     }
     li {
       margin-right: 4px;
