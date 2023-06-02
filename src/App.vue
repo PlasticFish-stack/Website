@@ -7,6 +7,7 @@ import { debounce } from '@/utils/index.js'
 const store = useStore();
 let viewWidth = document.documentElement.clientWidth;
 let viewHeight = document.documentElement.clientHeight;
+let scrollBottomBool = true
 const Obtain = () => store.commit('obtainSize', {
   width: viewWidth,
   height: viewHeight
@@ -28,7 +29,9 @@ onDeactivated(() => {
 </script>
 
 <template>
-  <navgation id="nav"></navgation>
+  <Transition name="scrollBottom">
+    <navgation id="nav" v-show="scrollBottomBool"></navgation>
+  </Transition>
   <div id="layout">
     <router-view />
   </div>

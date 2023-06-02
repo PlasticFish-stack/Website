@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, computed, watch ,ref} from 'vue';
+import { reactive, computed, watch ,ref, defineExpose} from 'vue';
 import { useStore } from 'vuex'
 
 const store = useStore();
@@ -24,6 +24,9 @@ const page = reactive([
   }
 ])
 let screenHeight = computed(()=> (windowWidth.value / 2.48));
+defineExpose({
+  screenHeight
+})
 </script>
 <template>
   <el-carousel trigger="click" :height="screenHeight + 'px'">
@@ -74,7 +77,7 @@ let screenHeight = computed(()=> (windowWidth.value / 2.48));
   content: '';
   height: 7px;
   width: 7px;
-  background-color: greenyellow;
+  background-color: #45b787;
   border-radius: 45%;
   position: relative;
   left: 21%;
