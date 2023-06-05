@@ -47,14 +47,14 @@ export default{
         {title: 'Exhibition'},
       ]
     },
-    contact: {
-      title: 'Contact us',
-      child:[
-        {title: 'Contact us'},
-        {title: 'After Sales Service'},
-        {title: 'Talent Recruitment'},
-      ]
-    }
+    // contact: {
+    //   title: 'Contact us',
+    //   child:[
+    //     {title: 'Contact us'},
+    //     {title: 'After Sales Service'},
+    //     {title: 'Talent Recruitment'},
+    //   ]
+    // }
   }
   
 }

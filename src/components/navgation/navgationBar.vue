@@ -16,13 +16,13 @@ const changeLang = (l) => {
     language = toRaw(tm('navbar'));
   }
 }
-const menu = toRaw(computed(() => store.getters.menubar).value);//Navgationbar内的菜单列名
+
 //菜单项展开
 let stretch = reactive({
   state: [],
   bool: false
 })
-stretch.state = Object.keys(menu).map((item) => false);
+stretch.state = Object.keys(language).map((item) => false);
 const deform = (index) => {
   if (stretch.state[index]) {
     stretch.state[index] = false;
@@ -51,7 +51,7 @@ onMounted(() => {
 <template>
   <div id="navgation">
     {{  locale.value }}
-    <img style="width: 230px; height: 50px" src="/src/assets/card1.png" fit="contain" />
+    <a href="/"><img style="width: 230px; height: 50px" src="/src/assets/card1.png" fit="contain" /></a>
     <div id="menu" @mouseenter="deformBox" @mouseleave="deformBox">
       <div id="menu_child" v-for="value, key, index in language" @mouseenter="deform(index)" @mouseleave="deform(index)"
         class="name" :key="value">
