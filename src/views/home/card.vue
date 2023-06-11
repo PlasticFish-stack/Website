@@ -8,21 +8,18 @@ const { locale, t, tm } = useI18n();
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin)
 
 onMounted(() => {
-  gsap.fromTo(window, {
-    scrollTrigger: {
-      trigger: "#flow",
-      start: "top center",
-      end: "top top",
-      scrub: 1,
-      once: true
-    },
-    scrollTo: { y: "#check", },
-    duration: 1
-  })
-
-
-
-
+  // gsap.fromTo(window, {
+  //   scrollTrigger: {
+  //     trigger: "#flow",
+  //     start: "top center",
+  //     end: "top top",
+  //     scrub: 1,
+  //     once: true
+  //   },
+  //   scrollTo: { y: "#check", },
+  //   duration: 1
+  // })
+})
 </script>
 
 <template>
@@ -31,7 +28,6 @@ onMounted(() => {
       <span id="flow_top">Products</span>
       <span id="flow_center">产品中心</span>
       <span id="flow_bottom">系列展示</span>
-      {{ tm('navbar.products.title') }}
     </div>
     <div id="layout">
       <div id="layout_page">
@@ -62,6 +58,7 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     color: #2b3138;
 
     #flow_top {
@@ -124,4 +121,4 @@ onMounted(() => {
         }
       }
     }
-  }</style>
+  }}</style>

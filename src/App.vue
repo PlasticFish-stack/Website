@@ -1,5 +1,6 @@
 <script setup>
 import navgation from '@/components/navgation/index.vue'
+import backtop from '@/components/backTop.vue'
 import { onMounted, computed, onDeactivated} from 'vue'
 import { useStore } from 'vuex'
 import { debounce } from '@/utils/index.js'
@@ -35,6 +36,7 @@ onDeactivated(() => {
   <div id="layout">
     <router-view />
   </div>
+  <backtop></backtop>
 </template>
 
 <style scoped>
