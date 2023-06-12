@@ -2,6 +2,8 @@
 import { computed, reactive, toRaw, onMounted} from 'vue';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n'
+
+
 const store = useStore();
 const {locale, t, tm} = useI18n();
 
@@ -38,13 +40,16 @@ const deformBox = () => {
   }
 }
 onMounted(() => {
-  console.log(document.getElementById('navgation').style.clientheight);
+  
+  console.log(document.body.clientHeight)
+  console.log(document.getElementById('navgation'));
   if(!localStorage.getItem('locale')){
     return
   }else{
     locale.value = localStorage.getItem('locale')
   }
   language = toRaw(tm('navbar'));
+  
 })
 </script>
 
@@ -92,7 +97,9 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   z-index: 1;
-
+  &--scrolled{
+    height: 0px;
+  }
   img {
     margin-left: 20px;
   }

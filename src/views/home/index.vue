@@ -2,11 +2,6 @@
 import carousel from '@/views/home/carousel.vue'
 import products from '@/views/home/products.vue'
 import card from '@/views/home/card.vue'
-const anchor = () => {
-  let el = document.querySelector('ss');
-  document.body.scrollTop = el.offsetTop;
-  document.documentElement.scrollTop = el.offsetTop
-}
 </script>
 
 <template>
