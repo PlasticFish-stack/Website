@@ -1,20 +1,21 @@
 
 export const debounce = (fn, delay) => {
   let time = null;
-  if(time){
-    clearTimeout(time)
+  return function(){
+    clearTimeout(time);
+    time = setTimeout(() => {
+      fn.apply(this, arguments);
+    },delay)
   }
-  time = setTimeout(() => {
-    fn() // 调用接口
-  }, delay);
 }
 // 节流
 
 export const throttle = (fn, delay) => {
+  console.log(fn)
   let flag = true
   if(flag) {
     setTimeout(() => {
-      console.log('触发点击')
+      
       fn() // 调用接口
       flag = true // 在定时器执行后 移除if阻断
     }, delay);

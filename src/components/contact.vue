@@ -1,9 +1,31 @@
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, ref, computed, reactive } from 'vue'
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { debounce } from '@/utils/index.js'
 gsap.registerPlugin(ScrollTrigger);
-let bool = true;
+let bool = reactive({type: false});
+const lengthen = (val) => {
+  console.log(val);
+  bool.type = val;
+}
+function onEnter(el, done) {
+  console.log('enterdone');
+  gsap.to(el, {
+    x: 0,
+    duration: 1,
+    onComplete: done
+  })
+}
+function onLeave(el, done) {
+  console.log('leavedone');
+  gsap.to(el, {
+    x: 400,
+    opacity: 0,
+    duration: 1,
+    onComplete: done
+  })
+}
 onMounted(() => {
   const showAnim = gsap.from('#view', {
     autoAlpha: 1,
@@ -18,23 +40,26 @@ onMounted(() => {
       self.direction === -1 ? showAnim.play() : showAnim.reverse()
     }
   });
+
+
+
 })
 </script>
 
 <template>
   <div id="view">
-    <TransitionGroup name="list" tag="div">
-      <div id="contact" key="contact" @mouseenter="lengthen()">
+    <TransitionGroup name="list" :css="false" tag="div" @enter="onEnter" @leave="onLeave" id="viewbox" @mouseenter="debounce(lengthen(true), 1000)"  @mouseleave="debounce(lengthen(false), 1000)" >
+      <div id="contact" key="contact"  >
         <svg t="1686551078813" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
           p-id="22950" width="30" height="30">
           <path
             d="M534.6 403.5l294.2 294.2c12.5 12.5 32.8 12.5 45.3 0l0 0c12.5-12.5 12.5-32.8 0-45.3L557.3 335.6c-25-25-65.5-25-90.5 0L150 652.4c-12.5 12.5-12.5 32.8 0 45.3l0 0c12.5 12.5 32.8 12.5 45.3 0l294.1-294.2C501.9 391 522.1 391 534.6 403.5z"
-            fill="#45b787" p-id="22951"></path>
+            fill="#fffef9" p-id="22951"></path>
         </svg>
       </div>
-      <div key="list">
+      <div key="bool" id="list">
         <ul>
-          <li>aa</li>
+          <li>{{ bool }}</li>
         </ul>
       </div>
     </TransitionGroup>
@@ -43,18 +68,54 @@ onMounted(() => {
         p-id="22950" width="30" height="30">
         <path
           d="M534.6 403.5l294.2 294.2c12.5 12.5 32.8 12.5 45.3 0l0 0c12.5-12.5 12.5-32.8 0-45.3L557.3 335.6c-25-25-65.5-25-90.5 0L150 652.4c-12.5 12.5-12.5 32.8 0 45.3l0 0c12.5 12.5 32.8 12.5 45.3 0l294.1-294.2C501.9 391 522.1 391 534.6 403.5z"
-          fill="#45b787" p-id="22951"></path>
+          fill="#fffef9" p-id="22951"></path>
       </svg>
     </div>
   </div>
 </template>
 
 <style scoped>
+#viewbox {
+  margin-right: -40px;
+  border-radius: 20px;
+  height: 40px;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  position: relative;
+  overflow: hidden;
+}
+
 #view {
+  overflow: hidden;
+  justify-content: flex-end;
+  height: 100px;
+  width: 400px;
   opacity: 0;
+  display: flex;
+  position: fixed;
+  margin-right: 80px;
+  margin-bottom: 80px;
+  right: 0;
+  bottom: 0;
+}
+
+#list {
+  transform: translateX(240px);
+  position: absolute;
+  height: 40px;
+  width: 200px;
+  display: flex;
+  box-shadow: var(--el-box-shadow-lighter);
+  justify-content: center;
+  align-items: center;
+  border-radius: 45px;
+  background-color: #45b787;
 }
 
 #contact {
+  
+  position: absolute;
   height: 40px;
   width: 40px;
   display: flex;
@@ -62,13 +123,8 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
   border-radius: 45px;
-  position: fixed;
-  margin-right: 80px;
-  margin-bottom: 140px;
-  right: 0;
-  bottom: 0;
   transform: rotate(-90deg);
-  background-color: white;
+  background-color: #45b787;
   cursor: pointer;
 }
 
@@ -90,13 +146,9 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
   border-radius: 45px;
-  position: fixed;
-  margin-right: 80px;
-  margin-bottom: 80px;
-  right: 0;
-  bottom: 0;
-  background-color: white;
+  background-color: #45b787;
   cursor: pointer;
+  margin-top: 60px;
 }
 
 #back::after {
