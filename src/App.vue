@@ -3,7 +3,6 @@ import navgation from '@/components/navgation/index.vue'
 import contact from '@/components/contact.vue'
 import { onMounted, computed, onDeactivated} from 'vue'
 import { useStore } from 'vuex'
-import { debounce } from '@/utils/index.js'
 
 const store = useStore();
 let viewWidth = document.documentElement.clientWidth;
@@ -16,11 +15,10 @@ const Obtain = () => store.commit('obtainSize', {
 onMounted(() => {
   Obtain();
   window.onresize = () => {
-    debounce(() => {
       viewWidth = document.documentElement.clientWidth;
       viewHeight = document.documentElement.clientHeight;
       Obtain();
-    }, 200);
+    
   }
 })
 onDeactivated(() => {

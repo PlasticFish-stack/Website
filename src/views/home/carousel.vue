@@ -24,9 +24,6 @@ const page = reactive([
   }
 ])
 let screenHeight = computed(()=> (windowWidth.value / 2.48));
-defineExpose({
-  screenHeight
-})
 </script>
 <template>
   <el-carousel trigger="click" :height="screenHeight + 'px'">
