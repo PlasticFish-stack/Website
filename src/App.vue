@@ -16,13 +16,13 @@ const Obtain = () => store.commit('obtainSize', {
 onMounted(() => {
   Obtain();
   window.onresize = () => {
-    debounce(() => {
+    
       viewWidth = document.documentElement.clientWidth;
       viewHeight = document.documentElement.clientHeight;
       Obtain();
-    }, 200);
+    }
   }
-})
+)
 onDeactivated(() => {
   window.onresize = null
 })

@@ -7,9 +7,8 @@ import card from '@/views/home/card.vue'
 <template>
   <div class="view">
     
-    <carousel></carousel>
+    <!-- <carousel></carousel> -->
     <card></card>
-    <a href="" onclick="anchor('ss')" style="background-color: black;">12</a>
     <products id="ss"></products>
     
   </div>
