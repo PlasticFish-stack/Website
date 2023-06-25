@@ -54,10 +54,10 @@ onMounted(() => {
           p-id="22950" width="30" height="30">
           <path
             d="M534.6 403.5l294.2 294.2c12.5 12.5 32.8 12.5 45.3 0l0 0c12.5-12.5 12.5-32.8 0-45.3L557.3 335.6c-25-25-65.5-25-90.5 0L150 652.4c-12.5 12.5-12.5 32.8 0 45.3l0 0c12.5 12.5 32.8 12.5 45.3 0l294.1-294.2C501.9 391 522.1 391 534.6 403.5z"
-            fill="#fffef9" p-id="22951"></path>
+            fill="#45b787" p-id="22951"></path>
         </svg>
       </div>
-      <div key="bool" id="list">
+      <div :key="bool.type" id="list">
         <ul>
           <li>{{ bool }}</li>
         </ul>
@@ -68,7 +68,7 @@ onMounted(() => {
         p-id="22950" width="30" height="30">
         <path
           d="M534.6 403.5l294.2 294.2c12.5 12.5 32.8 12.5 45.3 0l0 0c12.5-12.5 12.5-32.8 0-45.3L557.3 335.6c-25-25-65.5-25-90.5 0L150 652.4c-12.5 12.5-12.5 32.8 0 45.3l0 0c12.5 12.5 32.8 12.5 45.3 0l294.1-294.2C501.9 391 522.1 391 534.6 403.5z"
-          fill="#fffef9" p-id="22951"></path>
+          fill="#45b787" p-id="22951"></path>
       </svg>
     </div>
   </div>
@@ -79,23 +79,25 @@ onMounted(() => {
   margin-right: -40px;
   border-radius: 20px;
   height: 40px;
+  margin-top: 10px;
   width: 100%;
   display: flex;
   justify-content: flex-end;
   position: relative;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 #view {
   overflow: hidden;
   justify-content: flex-end;
-  height: 100px;
+  height: 120px;
   width: 400px;
   opacity: 0;
   display: flex;
   position: fixed;
   margin-right: 80px;
   margin-bottom: 80px;
+  padding-right: 3px;
   right: 0;
   bottom: 0;
 }
@@ -110,7 +112,7 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
   border-radius: 45px;
-  background-color: #45b787;
+  background-color: #fffef9;
 }
 
 #contact {
@@ -124,7 +126,7 @@ onMounted(() => {
   align-items: center;
   border-radius: 45px;
   transform: rotate(-90deg);
-  background-color: #45b787;
+  background-color: #fffef9;
   cursor: pointer;
 }
 
@@ -146,9 +148,9 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
   border-radius: 45px;
-  background-color: #45b787;
+  background-color: #fffef9;
   cursor: pointer;
-  margin-top: 60px;
+  margin-top: 65px;
 }
 
 #back::after {
