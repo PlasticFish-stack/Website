@@ -17,5 +17,6 @@ import card from '@/views/home/card.vue'
 <style scoped>
  .view{
   position: relative;
+  overflow-x: hidden;
  }
 </style>

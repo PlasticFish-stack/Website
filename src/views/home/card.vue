@@ -1,17 +1,12 @@
 <script setup>
 import gsap from 'gsap'
-import ScrollTrigger from 'gsap/ScrollTrigger'
-import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
-import { Draggable } from 'gsap/Draggable';
+
 import { onMounted, reactive, computed } from 'vue';
 import { useI18n } from 'vue-i18n'
 const { locale, t, tm } = useI18n();
 import { useStore } from 'vuex'
-gsap.registerPlugin(ScrollTrigger)
-gsap.registerPlugin(Draggable)
 
 const store = useStore();
-gsap.registerPlugin(ScrollTrigger, ScrollToPlugin)
 const windowWidth = computed(() => store.state.windowWidth);
 let screenHeight = computed(() => (windowWidth.value / 5));
 
@@ -35,43 +30,21 @@ const page = reactive([
   }
 ])
 
-
-
-
-
 onMounted(() => {
-  const stagger = 0.5;
-  const DURATION = 1;
-  const BOXES = gsap.utils.toArray('.swiper_box');
-  const LOOP = gsap.timeline(
-    {
-      paused: true,
-      repeat: -1,
-    })
-  const shifts = [...BOXES, ...BOXES, ...BOXES]
-  shifts.forEach((box, index) => {
-    console.log(box, index);
-    LOOP.fromTo(box, {
-      xPercent: 150
-    }, {
-      xPercent: -250,
-      duration: 1.5,
-      ease: 'none',
-    }, index * stagger
-    )
+  const stagger = 3
+  const box = gsap.utils.toArray('.swiper_box')
+  const LOOP = gsap.timeline({
+    paused: true,
+    repeat: -1
   })
-  const CYCLE_DURATION = stagger * BOXES.length
-  const START_TIME = CYCLE_DURATION + (DURATION * 0.5)
-  const END_TIME = START_TIME + CYCLE_DURATION
-  gsap.fromTo(LOOP, {
-    totalTime: START_TIME,
-  },
-    {
-      totalTime: END_TIME,
-      duration: 10,
-      ease: 'none',
-      repeat: -1,
-    })
+  const boxs = [...box, ...box, ...box];
+  boxs.forEach((item, index) => {
+    LOOP.fromTo(item, {
+      xPercent: 0
+    },{
+      xPercent: 0,
+    }, 3)
+  })
 })
 </script>
 
@@ -128,12 +101,13 @@ onMounted(() => {
   }
 
   #layout_box {
-    overflow: hidden;
     display: flex;
-
+    z-index: 0;
     .swiper_box {
-      position: absolute;
+      margin-left: 5rem;
+      margin-right: 5rem;
       overflow: hidden;
+      z-index: 1;
     }
   }
 }

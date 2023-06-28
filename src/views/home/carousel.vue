@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, computed, watch ,ref, defineExpose} from 'vue';
+import { reactive, computed, watch ,ref} from 'vue';
 import { useStore } from 'vuex'
 
 const store = useStore();
