@@ -1,25 +1,16 @@
 <script setup>
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-
 import { onMounted, reactive, computed } from 'vue';
 import { useI18n } from 'vue-i18n'
-const { locale, t, tm } = useI18n();
 import { useStore } from 'vuex'
-
-
-import { Swiper, SwiperSlide } from 'swiper/vue';
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/navigation';
-import { Pagination, Navigation } from 'swiper/modules';
-const modules = [Pagination, Navigation]
 gsap.registerPlugin(ScrollTrigger)
+
+
+const { locale, t, tm } = useI18n();
 const store = useStore();
 const windowWidth = computed(() => store.state.windowWidth);
-let screenHeight = computed(() => (windowWidth.value / 3.5));
-
+let screenHeight = computed(() => (windowWidth.value / 5));
 const page = reactive([
   {
     id: 0,
@@ -39,8 +30,54 @@ const page = reactive([
     num: 4,
   }
 ])
-onMounted(() => {
 
+onMounted(() => {
+  const elementTeam = gsap.utils.toArray('.swiper_box');
+  const init = (team) => {
+  const box = [...team, ...team, ...team];
+  const timelink = 1
+  const cycle_duration = 1 * box.length
+  const start_time = cycle_duration + (timelink * 0.5)
+  const end_time = start_time + cycle_duration
+  const loop = gsap.timeline({
+    repeat: -1,
+    paused: true,
+    ease: 'none'
+  })
+  box.forEach((item, index) => {
+    const loop_animation = gsap
+    .timeline()
+    .set(item, {xPercent: 110})
+    .fromTo(item, {xPercent: 110}, {xPercent: -160, duration: 1,immediateRender: true})
+    loop.add(loop_animation, index)
+  });
+  const loop_head = gsap.fromTo(loop, {
+    totalTime: start_time
+  },{
+    totalTime: end_time,
+    duration: 4,
+    ease: 'none',
+    repeat: -1,
+    paused: true,
+  })
+  const scrub_loop = gsap.to(loop_head,{
+    totalTime: 0,
+    paused: true,
+    duration: 1,
+    ease: 'none'
+  })
+  ScrollTrigger.create({
+    start: 0,
+    end: '+=2000',
+    horizontal: false,
+    pin: '#layout_box',
+    onUpdate: self => {
+      scrub_loop.vars.totalTime = loop_head.duration() * self.progress
+      scrub_loop.invalidate().restart()
+    }
+  })
+}
+  init(elementTeam)
 })
 </script>
 
@@ -50,47 +87,15 @@ onMounted(() => {
       <span id="flow_top">视频中心</span>
       <span id="flow_center">VIDEO CENTER</span>
     </div>
-    <TransitionGroup tag="div" id="layout_box" :style="{ height: screenHeight + 'px', width: 100+'%'}">
-      <swiper :slidesPerView="3"  :loop="true" :pagination="{ clickable: true, }" :navigation="true"
-        :modules="modules" key="i" class="mySwiper">
-        <swiper-slide :key="item" class="swiper_box" v-for="item in page" :style="{ height: screenHeight + 'px', width: windowWidth / 2 + 'px' }"
-          >
-          <img :src="'/src/assets/Carousel/' + item.src + '.jpg'"  :key="item + '123'"/>
-        </swiper-slide>
-      </swiper>
+    <TransitionGroup tag="div" id="layout_box" :style="{ height: screenHeight + 'px', width: 100 + '%' }">
+      <div class="swiper_box" :key="item" v-for="item in page" :style="{ height: screenHeight + 'px', width: screenHeight * 2.48 + 'px' }">
+        <img :src="'/src/assets/Carousel/' + item.src + '.jpg'" style="height: 100%; width: 100%; object-fit: fill;" />
+      </div>
     </TransitionGroup>
     <button id="add">1</button>
     <div id="check"></div>
   </div>
 </template>
-<style lang="scss">
-.swiper {
-  width: 100%;
-}
-
-.swiper-slide {
-  text-align: center;
-  font-size: 18px;
-  background: #fff;
-
-  /* Center slide text vertically */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.swiper-slide img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.swiper {
-  width: 100%;
-  height: 100%;
-}
-</style>
 <style lang="scss" scoped>
 #main {
   width: 100%;
@@ -101,7 +106,6 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
   #flow {
     height: 150px;
     width: 1280px;
@@ -110,17 +114,23 @@ onMounted(() => {
     align-items: center;
     justify-content: center;
     color: #2b3138;
-
     #flow_top {
       -webkit-text-stroke: black 0.3px;
       text-transform: uppercase;
     }
-
     #flow_center {
       margin-top: 10px;
       -webkit-text-stroke: black 0.3px;
     }
   }
-
+  #layout_box{
+      height: 100%;
+      width: 100%;
+      display: grid;
+      place-items: center;
+    .swiper_box{
+     position: absolute;
+    }
+  }
 }
 </style>
