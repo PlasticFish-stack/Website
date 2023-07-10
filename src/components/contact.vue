@@ -1,30 +1,35 @@
 <script setup>
-import { onMounted, ref, computed, reactive } from 'vue'
+import { onMounted, ref, computed, reactive, nextTick } from 'vue'
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { debounce } from '@/utils/index.js'
+import { throttle } from '@/utils/index.js'
 gsap.registerPlugin(ScrollTrigger);
-let bool = reactive({type: false});
+
+let bool = reactive({ type: true })
 const lengthen = (val) => {
-  console.log(val);
+  
   bool.type = val;
+  console.log(bool.type);
 }
 function onEnter(el, done) {
-  console.log('enterdone');
-  gsap.to(el, {
-    x: 0,
-    duration: 1,
-    onComplete: done
+  if(bool.type == false){
+    gsap.fromTo(el, {
+    width: 40
+  },{
+    width: 250,
+    duration: 0.5,
+    immediateRender: false,
   })
-}
-function onLeave(el, done) {
-  console.log('leavedone');
-  gsap.to(el, {
-    x: 400,
-    opacity: 0,
-    duration: 1,
-    onComplete: done
+  }else{
+    gsap.fromTo(el, {
+    width: 250
+  },{
+    width: 40,
+    duration: 0.5,
+    immediateRender: false,
   })
+  }
+  
 }
 onMounted(() => {
   const showAnim = gsap.from('#view', {
@@ -48,19 +53,14 @@ onMounted(() => {
 
 <template>
   <div id="view">
-    <TransitionGroup name="list" :css="false" tag="div" @enter="onEnter" @leave="onLeave" id="viewbox" @mouseenter="debounce(lengthen(true), 1000)"  @mouseleave="debounce(lengthen(false), 1000)" >
-      <div id="contact" key="contact"  >
-        <svg t="1686551078813" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+    <TransitionGroup name="list" :css="false" tag="div" @enter="onEnter"  id="viewbox">
+      <div id="contact" :key="bool.type" @mouseenter="throttle(lengthen(false), 1000)" @mouseleave="throttle(lengthen(true), 1000)">
+        <!-- <svg t="1686551078813" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
           p-id="22950" width="30" height="30">
           <path
             d="M534.6 403.5l294.2 294.2c12.5 12.5 32.8 12.5 45.3 0l0 0c12.5-12.5 12.5-32.8 0-45.3L557.3 335.6c-25-25-65.5-25-90.5 0L150 652.4c-12.5 12.5-12.5 32.8 0 45.3l0 0c12.5 12.5 32.8 12.5 45.3 0l294.1-294.2C501.9 391 522.1 391 534.6 403.5z"
             fill="#45b787" p-id="22951"></path>
-        </svg>
-      </div>
-      <div :key="bool.type" id="list">
-        <ul>
-          <li>{{ bool }}</li>
-        </ul>
+        </svg> -->
       </div>
     </TransitionGroup>
     <div id="back">
@@ -116,7 +116,7 @@ onMounted(() => {
 }
 
 #contact {
-  
+
   position: absolute;
   height: 40px;
   width: 40px;
@@ -125,19 +125,10 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
   border-radius: 45px;
-  transform: rotate(-90deg);
   background-color: #fffef9;
   cursor: pointer;
 }
 
-#contact::after {
-  content: '';
-  box-shadow: var(--el-box-shadow-lighter);
-  border-radius: 50%;
-  height: 100%;
-  width: 100%;
-  position: absolute;
-}
 
 #back {
   height: 40px;
@@ -153,12 +144,4 @@ onMounted(() => {
   margin-top: 65px;
 }
 
-#back::after {
-  content: '';
-  box-shadow: var(--el-box-shadow-lighter);
-  border-radius: 50%;
-  height: 100%;
-  width: 100%;
-  position: absolute;
-}
 </style>

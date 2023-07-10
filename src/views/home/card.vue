@@ -47,8 +47,8 @@ onMounted(() => {
   box.forEach((item, index) => {
     const loop_animation = gsap
     .timeline()
-    .set(item, {xPercent: 110})
-    .fromTo(item, {xPercent: 110}, {xPercent: -160, duration: 1,immediateRender: true})
+
+    .fromTo(item, {xPercent: 55}, {xPercent: -85, duration: 1,immediateRender: true})
     loop.add(loop_animation, index)
   });
   const loop_head = gsap.fromTo(loop, {
@@ -69,7 +69,7 @@ onMounted(() => {
   ScrollTrigger.create({
     start: 0,
     end: '+=2000',
-    horizontal: false,
+    horizontal: true,
     pin: '#layout_box',
     onUpdate: self => {
       scrub_loop.vars.totalTime = loop_head.duration() * self.progress
@@ -88,12 +88,11 @@ onMounted(() => {
       <span id="flow_center">VIDEO CENTER</span>
     </div>
     <TransitionGroup tag="div" id="layout_box" :style="{ height: screenHeight + 'px', width: 100 + '%' }">
-      <div class="swiper_box" :key="item" v-for="item in page" :style="{ height: screenHeight + 'px', width: screenHeight * 2.48 + 'px' }">
-        <img :src="'/src/assets/Carousel/' + item.src + '.jpg'" style="height: 100%; width: 100%; object-fit: fill;" />
+      <div class="swiper_box" :key="item" v-for="item in page">
+        <!-- <img :src="'/src/assets/Carousel/' + item.src + '.jpg'" style="height: 100%; width: 100%; object-fit: fill;" /> -->
+        {{ item.id }}
       </div>
     </TransitionGroup>
-    <button id="add">1</button>
-    <div id="check"></div>
   </div>
 </template>
 <style lang="scss" scoped>
@@ -106,30 +105,41 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
   #flow {
-    height: 150px;
+    height: 100px;
     width: 1280px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     color: #2b3138;
+
     #flow_top {
       -webkit-text-stroke: black 0.3px;
       text-transform: uppercase;
     }
+
     #flow_center {
       margin-top: 10px;
       -webkit-text-stroke: black 0.3px;
     }
   }
-  #layout_box{
-      height: 100%;
-      width: 100%;
-      display: grid;
-      place-items: center;
-    .swiper_box{
-     position: absolute;
+
+  #layout_box {
+    display: flex;
+    // position: relative;
+    // grid-template-columns: 0.65fr 1fr 0.65fr;
+    // grid-template-rows: 1fr;
+    // grid-column-gap: 30px;
+    // grid-row-gap: 0px;
+    // white-space: nowrap; /* 阻止项目换行 */
+    // overflow: hidden; /* 隐藏溢出内容 */
+    .swiper_box {
+      background-color: black;
+      color: white;
+      height: 100px;
+      width: 100px;
     }
   }
 }
