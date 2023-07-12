@@ -7,7 +7,7 @@
   onMounted(() => {
     const anime = () => {
       let iteration = 0;
-      const stagger = 0.2;
+      const stagger = 0.1;
       const box = gsap.utils.toArray('.swiper_box');
       const loop = gsap.timeline({
         paused: true,
@@ -18,14 +18,14 @@
       boxes.forEach((item, index) => {
         const line = gsap.timeline()
                          .set(item, {
-                          xPercent: 100
+                          xPercent: 200
                         })
                         .fromTo(item, {
-                          xPercent: 100,
+                          xPercent: 500,
                           opacity: 1,
                         },{
-                          xPercent: -200,
-                          opacity: 0,
+                          xPercent: -600,
+                          opacity: 1,
                           duration: 1,
                           ease: 'none',
                           imageRendering: false,
@@ -34,10 +34,10 @@
         loop.add(line, index * stagger)
       })
       const durations = 1;//等待时间
-      const offset = stagger * 15; //偏移值
+      const offset = stagger * box.length; //偏移值
       const durations_loop = boxes.length * stagger;// LOOP走完持续的时间
-      const start_time = durations_loop + durations; //起始时间 
-      const end_time = start_time + durations_loop; //结束时间
+      const start_time = durations_loop + durations + offset; //起始时间 
+      const end_time = start_time + durations_loop - offset; //结束时间
       const table = {
         start: start_time,
         end: end_time,
@@ -178,8 +178,8 @@
     width: 100%;
     .swiper_box {
       position: absolute;
-      height: 200px;
-      width: 200px;
+      height: 600px;
+      width: 900px;
       background-color: black;
       display: flex;
       justify-content: center;

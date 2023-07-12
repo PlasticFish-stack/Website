@@ -15,13 +15,13 @@ function onEnter(el, done) {
     gsap.fromTo(el, {
     width: 40
   },{
-    width: 350,
-    duration: 0.5,
+    width: 390,
+    duration: 0.4,
     immediateRender: false,
   })
   }else{
     gsap.fromTo(el, {
-    width: 350
+    width: 390
   },{
     width: 40,
     duration: 0.3,
@@ -126,6 +126,7 @@ onMounted(() => {
     width: 90%;
     color: black;
     align-items: center;
+    justify-content: center;
     li{
       margin-right: 9px;
       width: 28px;
