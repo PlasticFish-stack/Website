@@ -65,7 +65,7 @@ onMounted(() => {
         loop_head.totalTime(POSITION_WRAP(PLAYHEAD.position))
       },
       paused: true,
-      duration: 1,
+      duration: 0.25,
       ease: 'power3'
     })
     
@@ -102,6 +102,12 @@ onMounted(() => {
       const SNAP_POS = SNAP(position);
       const PROGRESS = (SNAP_POS - loop_head.duration() * iteration) / loop_head.duration();
       const SCROLL = progressToScroll(PROGRESS);
+      console.table({
+        'SNAP_POS': SNAP_POS,
+        'PROGRESS' : PROGRESS,
+        'SCROLL' : SCROLL,
+        'SC' : (SNAP_POS - loop_head.duration() * iteration)
+    });
       if(PROGRESS >= 1 || PROGRESS < 0){
         return WRAP(Math.floor(PROGRESS), SCROLL)
       }
@@ -110,7 +116,39 @@ onMounted(() => {
     ScrollTrigger.addEventListener('scrollEnd', () => {
       scrollToPosition(SCRUB.vars.position)
     })
+    const NEXT = () => scrollToPosition(SCRUB.vars.position - 0.5)
+    const PREV = () => scrollToPosition(SCRUB.vars.position + 0.5)
+    document.addEventListener('keydown', event => {
+      if(event.code === 'ArrowLeft' || event.code === 'KeyA')NEXT();
+      if(event.code === 'ArrowRight' || event.code === 'KeyD')PREV();
+    })
+    document.querySelector('#next').addEventListener('click', NEXT);
+    document.querySelector('#prev').addEventListener('click', PREV);
 
+
+
+    Draggable.create('.drag-proxy', {
+      type: 'x',
+      trigger: '.swiper_box',
+      i: 'null',
+      onPress(){
+        this.startOffset = SCRUB.vars.position
+        this.i = SCRUB.vars.position
+      },
+      onDrag(){
+        console.log(SCRUB.vars.position.toFixed(3) * 1000 /5, '1');
+        if(SCRUB.vars.position.toFixed(3)*1000 / 5 == 0 ){
+          console.log(SCRUB.vars.position, 'HHHHHHHHHHHHH');
+        }
+        SCRUB.vars.position = this.startOffset + (this.startX - this.x) * 0.001;
+        console.log(SCRUB.vars.position, '2');
+        SCRUB.invalidate().restart()
+      },
+      onDragEnd(){
+        console.log(this.i - SCRUB.vars.position, '123');
+        scrollToPosition(SCRUB.vars.position)
+      }
+    })
   };
   anime()
 
@@ -153,6 +191,11 @@ onMounted(() => {
       <div class="swiper_box" :key="item" v-for="item in 10">
         {{ item }}
       </div>
+      <div>
+        <div id="prev">左</div>
+        <div id="next">右</div>
+      </div>
+      <div class="drag-proxy"></div>
     </div>
 
 
@@ -162,7 +205,7 @@ onMounted(() => {
 #main {
   width: 100%;
   // height: calc(100vh - 150px);
-  height: 50000px;
+  height: 5000px;
   min-height: calc(100vh - 150px);
   display: flex;
   color: red;
@@ -194,7 +237,8 @@ onMounted(() => {
 
   #layout_box {
     width: 100%;
-
+    position: relative;
+    height: 1000px;
     .swiper_box {
       position: absolute;
       height: 600px;
@@ -205,6 +249,30 @@ onMounted(() => {
       align-items: center;
       left: 50%;
 
+    }
+    #prev{
+      height: 50px;
+      width: 50px;
+      position: absolute;
+      z-index: 999;
+      background-color: white;
+      left: 50%;
+      top: 30%;
+      transform: translate(-380px,-50%);
+    }
+    #next{
+      height: 50px;
+      width: 50px;
+      position: absolute;
+      z-index: 999;
+      background-color: white;
+      right: 50%;
+      top: 30%;
+      transform: translate(380px,-50%);
+    }
+    .drag-proxy{
+      visibility: hidden;
+      position: absolute
     }
   }
 }
