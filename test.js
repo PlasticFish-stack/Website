@@ -1,111 +1,129 @@
+const wrapper = document.querySelector(".wrapper");
+const colors = ["#f38630","#6fb936", "#ccc", "#6fb936"];
+const boxes = gsap.utils.toArray(".box");
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.set(boxes , {
+	backgroundColor: gsap.utils.wrap(colors)
+});
 
-let iteration = 0; // 当我们滚动到最后或最开始，并环绕时，播放头会被迭代 - 这使得我们可以平滑地以正确的方向继续拖动播放头。
+const loop = horizontalLoop(boxes, {paused: true, draggable: true});
 
-const spacing = 0.1,    // 卡片之间的间距（错开）
-  snap = gsap.utils.snap(spacing), // 我们将使用这个来使播放头在seamlessLoop上吸附。
-  cards = gsap.utils.toArray('.cards li'),
-  seamlessLoop = buildSeamlessLoop(cards, spacing),
-  scrub = gsap.to(seamlessLoop, { // 我们可以重复使用这个补间动画，以平滑地拖动播放头在seamlessLoop上进行控制。
-    totalTime: 0,
-    duration: 0.5,
-    ease: "power3",
-    paused: true
-  }),
-  trigger = ScrollTrigger.create({
-    start: 0,
-    onUpdate(self) {
-      if (self.progress === 1 && self.direction > 0 && !self.wrapping) {
-        wrapForward(self);
-      } else if (self.progress < 1e-5 && self.direction < 0 && !self.wrapping) {
-        wrapBackward(self);
-      } else {
-        scrub.vars.totalTime = snap((iteration + self.progress) * seamlessLoop.duration());
-        scrub.invalidate().restart(); // 为了提高性能，我们只需使同一个补间动画无效并重新开始即可。不需要在每次更新时进行覆写或创建新的补间动画。
-        self.wrapping = false;
-      }
-    },
-    end: "+=3000",
-    pin: ".gallery"
-  });
+boxes.forEach((box, i) => box.addEventListener("click", () => loop.toIndex(i, {duration: 0.8, ease: "power1.inOut"})));
 
-function wrapForward(trigger) { // 当滚动触发器到达结尾时，无缝地回到开头循环播放。
-  iteration++;
-  trigger.wrapping = true;
-  trigger.scroll(trigger.start + 1);
-}
-
-function wrapBackward(trigger) { // 当滚动触发器再次到达开始位置（以相反的方向），无缝地回到结尾循环播放。
-  iteration--;
-  if (iteration < 0) { // 为了防止播放头停在开头，我们可以提前跳过10次迭代。
-    iteration = 9;
-    seamlessLoop.totalTime(seamlessLoop.totalTime() + seamlessLoop.duration() * 10);
-    scrub.pause(); // 否则，在触发器更新之前，它可能会更新总时间（totalTime），使得起始值与我们上面设置的值不同。
-  }
-  trigger.wrapping = true;
-  trigger.scroll(trigger.end - 1);
-}
-
-function scrubTo(totalTime) { // 将滚动位置移动到与seamlessLoop的总时间（totalTime）值对应的位置，并在需要时进行包装回滚。
-  let progress = (totalTime - seamlessLoop.duration() * iteration) / seamlessLoop.duration();
-  if (progress > 1) {
-    wrapForward(trigger);
-  } else if (progress < 0) {
-    wrapBackward(trigger);
-  } else {
-    trigger.scroll(trigger.start + progress * (trigger.end - trigger.start));
-  }
-}
-
-document.querySelector(".next").addEventListener("click", () => scrubTo(scrub.vars.totalTime + spacing));
-document.querySelector(".prev").addEventListener("click", () => scrubTo(scrub.vars.totalTime - spacing));
+document.querySelector(".toggle").addEventListener("click", () => wrapper.classList.toggle("show-overflow"));
+document.querySelector(".next").addEventListener("click", () => loop.next({duration: 0.4, ease: "power1.inOut"}));
+document.querySelector(".prev").addEventListener("click", () => loop.previous({duration: 0.4, ease: "power1.inOut"}));
 
 
 
 
-function buildSeamlessLoop(items, spacing) {
-  let overlap = Math.ceil(1 / spacing), // 为了适应无缝循环，需要在开始/结束的两侧增加额外的动画数目。
-    startTime = items.length * spacing + 0.5, // 在rawSequence上开始无缝循环的时间。
-    loopTime = (items.length + overlap) * spacing + 1, // 在循环回到startTime的结尾位置。
-    rawSequence = gsap.timeline({paused: true}), // 这是所有“真实”动画存在的位置。
-    seamlessLoop = gsap.timeline({ // 这只是将rawSequence的播放头滑动，使其看起来无缝循环。
-      paused: true,
-      repeat: -1, // 为了适应无限滚动/循环。
-      onRepeat() { // 解决了一个非常罕见的边缘情况错误，该错误在GSAP 3.6.1中已修复。
-        this._time === this._dur && (this._tTime += this._dur - 0.01);
-      }
+/*
+This helper function makes a group of elements animate along the x-axis in a seamless, responsive loop.
+
+Features:
+ - Uses xPercent so that even if the widths change (like if the window gets resized), it should still work in most cases.
+ - When each item animates to the left or right enough, it will loop back to the other side
+ - Optionally pass in a config object with values like draggable: true, speed (default: 1, which travels at roughly 100 pixels per second), paused (boolean), repeat, reversed, and paddingRight.
+ - The returned timeline will have the following methods added to it:
+   - next() - animates to the next element using a timeline.tweenTo() which it returns. You can pass in a vars object to control duration, easing, etc.
+   - previous() - animates to the previous element using a timeline.tweenTo() which it returns. You can pass in a vars object to control duration, easing, etc.
+   - toIndex() - pass in a zero-based index value of the element that it should animate to, and optionally pass in a vars object to control duration, easing, etc. Always goes in the shortest direction
+   - current() - returns the current index (if an animation is in-progress, it reflects the final index)
+   - times - an Array of the times on the timeline where each element hits the "starting" spot. There's also a label added accordingly, so "label1" is when the 2nd element reaches the start.
+ */
+function horizontalLoop(items, config) {
+	items = gsap.utils.toArray(items);
+	config = config || {};
+	let tl = gsap.timeline({repeat: config.repeat, paused: config.paused, defaults: {ease: "none"}, onReverseComplete: () => tl.totalTime(tl.rawTime() + tl.duration() * 100)}),
+		length = items.length,
+		startX = items[0].offsetLeft,
+		times = [],
+		widths = [],
+		xPercents = [],
+		curIndex = 0,
+		pixelsPerSecond = (config.speed || 1) * 100,
+		snap = config.snap === false ? v => v : gsap.utils.snap(config.snap || 1), // some browsers shift by a pixel to accommodate flex layouts, so for example if width is 20% the first element's width might be 242px, and the next 243px, alternating back and forth. So we snap to 5 percentage points to make things look more natural
+		populateWidths = () => items.forEach((el, i) => {
+      widths[i] = parseFloat(gsap.getProperty(el, "width", "px"));
+      xPercents[i] = snap(parseFloat(gsap.getProperty(el, "x", "px")) / widths[i] * 100 + gsap.getProperty(el, "xPercent"));
     }),
-    l = items.length + overlap * 2,
-    time = 0,
-    i, index, item;
-
-  // 设置项目的初始状态。
-  gsap.set(items, {xPercent: 400, opacity: 0, scale: 0});
-
-  // 现在以错开的方式循环遍历并创建所有动画。请记住，我们必须在结尾创建额外的动画来实现无缝循环。
-  for (i = 0; i < l; i++) {
-    index = i % items.length;
-    item = items[index];
-    time = i * spacing;
-    rawSequence.fromTo(item, {scale: 0, opacity: 0}, {scale: 1, opacity: 1, zIndex: 100, duration: 0.5, yoyo: true, repeat: 1, ease: "power1.in", immediateRender: false}, time)
-               .fromTo(item, {xPercent: 400}, {xPercent: -400, duration: 1, ease: "none", immediateRender: false}, time);
-    i <= items.length && seamlessLoop.add("label" + i, time); // 虽然我们并不真正需要这些，但如果你想使用标签来跳转到关键位置，我可以为你展示一下。
+    getTotalWidth = () => items[length-1].offsetLeft + xPercents[length-1] / 100 * widths[length-1] - startX + items[length-1].offsetWidth * gsap.getProperty(items[length-1], "scaleX") + (parseFloat(config.paddingRight) || 0),
+      totalWidth, curX, distanceToStart, distanceToLoop, item, i;
+	  populateWidths();
+    gsap.set(items, { // convert "x" to "xPercent" to make things responsive, and populate the widths/xPercents Arrays to make lookups faster.
+		xPercent: i => xPercents[i]
+	});
+	gsap.set(items, {x: 0});
+	totalWidth = getTotalWidth();
+	for (i = 0; i < length; i++) {
+		item = items[i];
+		curX = xPercents[i] / 100 * widths[i];
+		distanceToStart = item.offsetLeft + curX - startX;
+		distanceToLoop = distanceToStart + widths[i] * gsap.getProperty(item, "scaleX");
+		tl.to(item, {
+      xPercent: snap((curX - distanceToLoop) / widths[i] * 100),
+      duration: distanceToLoop / pixelsPerSecond}, 0)
+		  .fromTo(item, {xPercent: snap((curX - distanceToLoop + totalWidth) / widths[i] * 100)}, {xPercent: xPercents[i], duration: (curX - distanceToLoop + totalWidth - curX) / pixelsPerSecond, immediateRender: false}, distanceToLoop / pixelsPerSecond)
+		  .add("label" + i, distanceToStart / pixelsPerSecond);
+		times[i] = distanceToStart / pixelsPerSecond;
+	}
+	function toIndex(index, vars) {
+		vars = vars || {};
+		(Math.abs(index - curIndex) > length / 2) && (index += index > curIndex ? -length : length); // always go in the shortest direction
+		let newIndex = gsap.utils.wrap(0, length, index),
+			time = times[newIndex];
+		if (time > tl.time() !== index > curIndex) { // if we're wrapping the timeline's playhead, make the proper adjustments
+			vars.modifiers = {time: gsap.utils.wrap(0, tl.duration())};
+			time += tl.duration() * (index > curIndex ? 1 : -1);
+		}
+		curIndex = newIndex;
+		vars.overwrite = true;
+		return tl.tweenTo(time, vars);
+	}
+	tl.next = vars => toIndex(curIndex+1, vars);
+	tl.previous = vars => toIndex(curIndex-1, vars);
+	tl.current = () => curIndex;
+	tl.toIndex = (index, vars) => toIndex(index, vars);
+  tl.updateIndex = () => curIndex = Math.round(tl.progress() * items.length);
+	tl.times = times;
+  tl.progress(1, true).progress(0, true); // pre-render for performance
+  if (config.reversed) {
+    tl.vars.onReverseComplete();
+    tl.reverse();
+  }
+  if (config.draggable && typeof(Draggable) === "function") {
+    let proxy = document.createElement("div"),
+        wrap = gsap.utils.wrap(0, 1),
+        ratio, startProgress, draggable, dragSnap, roundFactor,
+        align = () => tl.progress(wrap(startProgress + (draggable.startX - draggable.x) * ratio)),
+        syncIndex = () => tl.updateIndex();
+    typeof(InertiaPlugin) === "undefined" && console.warn("InertiaPlugin required for momentum-based scrolling and snapping. https://greensock.com/club");
+    draggable = Draggable.create(proxy, {
+      trigger: items[0].parentNode,
+      type: "x",
+      onPress() {
+        startProgress = tl.progress();
+        tl.progress(0);
+        populateWidths();
+        totalWidth = getTotalWidth();
+        ratio = 1 / totalWidth;
+        dragSnap = totalWidth / items.length;
+        roundFactor = Math.pow(10, ((dragSnap + "").split(".")[1] || "").length);
+        tl.progress(startProgress);
+      },
+      onDrag: align,
+      onThrowUpdate: align,
+      inertia: true,
+      snap: value => {
+        let n = Math.round(parseFloat(value) / dragSnap) * dragSnap * roundFactor;
+        return (n - n % 1) / roundFactor;
+      },
+      onRelease: syncIndex,
+      onThrowComplete: () => gsap.set(proxy, {x: 0}) && syncIndex()
+    })[0];
+    
+    tl.draggable = draggable;
   }
   
-  // 以下是我们设置播放头的快进来使其看起来无缝的部分代码。
-
-
-  rawSequence.time(startTime);
-  seamlessLoop.to(rawSequence, {
-    time: loopTime,
-    duration: loopTime - startTime,
-    ease: "none"
-  }).fromTo(rawSequence, {time: overlap * spacing + 1}, {
-    time: startTime,
-    duration: startTime - (overlap * spacing + 1),
-    immediateRender: false,
-    ease: "none"
-  });
-  return seamlessLoop;
+	return tl;
 }
