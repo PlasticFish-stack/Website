@@ -16,7 +16,7 @@ onMounted(() => {
   console.log(startX, '123');
   const pixelSpeed = 1 * 100;
   const snap = gsap.utils.snap(1)
-  const totalWidth = snap(boxes[boxes.length-1].offsetLeft + gsap.getProperty(boxes[0], "width"));//最后一个块离屏幕左侧距离
+ 
   let widths = [],
     xPercents = [];
   function populateWdith() {
@@ -30,21 +30,32 @@ onMounted(() => {
   gsap.set(boxes, {
     x: -startX
   })
+  
+  console.log(snap(boxes[0].offsetLeft));
+  const totalWidth = snap(boxes[boxes.length-1].offsetLeft - boxes[0].offsetLeft - gsap.getProperty(boxes[0], 'width'));//最后一个块离屏幕左侧距离
   boxes.forEach((el, index) => {
     const distanceToStart = el.offsetLeft - startX;
+    
     const distanceToLoop = distanceToStart + widths[index];
-    console.log(distanceToStart, distanceToLoop);
+    console.log({
+      '最后一项位置' : totalWidth,
+      '到左第一走的距离': distanceToLoop,
+      '继续位置': (distanceToLoop + totalWidth),
+      '时间': (distanceToLoop + totalWidth) / pixelSpeed,
+      '不知道什么东西':  ((totalWidth - distanceToLoop) + widths[0] * 2)
+    });
+
     loop.to(el, {
-      xPercent: snap((-distanceToL4oop) / widths[index] * 100),
+      xPercent: snap((-distanceToLoop) / widths[index] * 100),
       duration: distanceToLoop / pixelSpeed
     }, 0)
-    // .fromTo(el, {
-    //   xPercent: (distanceToLoop + totalWidth) / widths[index] * 100
-    // },{
-    //   xPercent: 0,
-    //   duration: (- distanceToLoop + totalWidth ) / pixelSpeed,
-    //   immediateRender: false
-    // }, distanceToLoop / pixelSpeed)
+    loop.fromTo(el, {
+      xPercent: snap(( ((totalWidth - distanceToLoop) + widths[0] * 2) / widths[index] * 100))
+    },{
+      xPercent: 0,
+      duration: ((totalWidth - distanceToLoop) + widths[0] * 2)/ pixelSpeed,
+      immediateRender: false
+    }, distanceToLoop / pixelSpeed)
     .add("label" + index, distanceToStart / pixelSpeed)
   })
 
@@ -79,13 +90,16 @@ onMounted(() => {
 
 
     <div id="layout_box">
-      <div class="swiper_box" :key="item" v-for="item in 10">
+      <div class="swiper_box" :key="item" v-for="item in 15">
         {{ item }}
       </div>
       <div>
         <div id="prev">左</div>
         <div id="next">右</div>
       </div>
+      <ul id="stone">
+        <li v-for="item in 15"></li>
+      </ul>
       <div class="drag-proxy"></div>
     </div>
   </div>
@@ -130,9 +144,10 @@ onMounted(() => {
     display: flex;
     justify-content: center;
     left: 0;
+    top: 130px;
     .swiper_box {
       height: 600px;
-      width: 300px;
+      width: 30%;
       background-color: black;
       display: flex;
       justify-content: center;
