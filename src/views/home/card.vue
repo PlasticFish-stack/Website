@@ -3,61 +3,94 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Draggable } from 'gsap/Draggable';
 import { onMounted } from 'vue';
-import { castToVueI18n } from 'vue-i18n';
 gsap.registerPlugin(ScrollTrigger, Draggable);
 onMounted(() => {
   const boxes = gsap.utils.toArray('.swiper_box');
   let loop = gsap.timeline({
-    paused: false,
+    paused: true,
     repeat: -1,
     defaults: { ease: 'none' },
   });
   const startX = boxes[0].offsetLeft;
-  console.log(startX, '123');
+
   const pixelSpeed = 1 * 100;
   const snap = gsap.utils.snap(1)
- 
+  
   let widths = [],
     xPercents = [];
   function populateWdith() {
     boxes.forEach((el, index) => {
       widths[index] = parseFloat(gsap.getProperty(el, 'width', 'px'));
       xPercents[index] = snap(parseFloat(gsap.getProperty(el, 'x', 'px')) / widths[index] * 100 + gsap.getProperty(el, 'xPercent'))
-      
     })
   }
   populateWdith();
+
   gsap.set(boxes, {
-    x: -startX
+    // x: -startX
+    xPercent: 0
   })
-  
-  console.log(snap(boxes[0].offsetLeft));
-  const totalWidth = snap(boxes[boxes.length-1].offsetLeft - boxes[0].offsetLeft - gsap.getProperty(boxes[0], 'width'));//最后一个块离屏幕左侧距离
+
+  const totalWidth = snap(boxes[boxes.length-1].offsetLeft - boxes[0].offsetLeft + gsap.getProperty(boxes[0], 'width'));//最后一个块离屏幕左侧距离
   boxes.forEach((el, index) => {
     const distanceToStart = el.offsetLeft - startX;
-    
     const distanceToLoop = distanceToStart + widths[index];
-    console.log({
-      '最后一项位置' : totalWidth,
-      '到左第一走的距离': distanceToLoop,
-      '继续位置': (distanceToLoop + totalWidth),
-      '时间': (distanceToLoop + totalWidth) / pixelSpeed,
-      '不知道什么东西':  ((totalWidth - distanceToLoop) + widths[0] * 2)
-    });
-
     loop.to(el, {
       xPercent: snap((-distanceToLoop) / widths[index] * 100),
       duration: distanceToLoop / pixelSpeed
     }, 0)
     loop.fromTo(el, {
-      xPercent: snap(( ((totalWidth - distanceToLoop) + widths[0] * 2) / widths[index] * 100))
+      xPercent: snap( ((totalWidth - distanceToLoop + gsap.getProperty('.swiper_box', 'marginRight'))  / widths[index] * 100)) 
     },{
       xPercent: 0,
-      duration: ((totalWidth - distanceToLoop) + widths[0] * 2)/ pixelSpeed,
+      duration: (totalWidth - distanceToLoop + gsap.getProperty('.swiper_box', 'marginRight')) / pixelSpeed,
       immediateRender: false
     }, distanceToLoop / pixelSpeed)
     .add("label" + index, distanceToStart / pixelSpeed)
   })
+
+  loop.progress(1, true).progress(0, true);
+  let startProgess = null,
+      ratio = null,
+      dragSnap = null,
+      wrap = gsap.utils.wrap(0, 1),
+      roundFactor = null,
+      snapi = gsap.utils.snap(0.14);
+  const draggable = Draggable.create('.drag-proxy', {
+    trigger: '#layout_box',
+    type: "x",
+    edgeResistance: 0.65,
+      onPress() {
+        startProgess = loop.progress();
+        loop.progress(0);
+        ratio = 1 / totalWidth;
+        dragSnap = totalWidth / boxes.length;
+        console.log(wrap(startProgess + (this.startX - this.x) * ratio));
+        roundFactor = Math.pow(10, ((dragSnap + "").split(".")[1] || "").length);
+
+        loop.progress(startProgess);
+      },
+      onDrag(){
+        
+        console.log(wrap(startProgess + (this.startX - this.x) * ratio));
+        loop.progress(wrap(startProgess + (this.startX - this.x) * ratio))
+      },
+      onThrowUpdate(){
+        loop.progress(snapi(wrap(startProgess + (this.startX - this.x) * ratio)))
+      },
+      inertia: true,
+      snap: {
+        x: function(value) {
+
+   
+          return 0.14
+        }
+      },
+      onRelease(){
+        Math.round(loop.progress() * boxes.length)
+      },
+      onThrowComplete: () => {return gsap.set(proxy, {x: 0}) && loop.progress() * boxes.length}
+  })[0]
 
 
 
@@ -90,7 +123,7 @@ onMounted(() => {
 
 
     <div id="layout_box">
-      <div class="swiper_box" :key="item" v-for="item in 15">
+      <div class="swiper_box" :key="item" v-for="item in 7">
         {{ item }}
       </div>
       <div>
@@ -138,16 +171,17 @@ onMounted(() => {
   }
 
   #layout_box {
+    overflow-x: hidden;
     width: 100%;
-    position: absolute;
-    height: 1000px;
+    position: relative;
+    height: 720px;
     display: flex;
     justify-content: center;
-    left: 0;
-    top: 130px;
+    top: 120px;
     .swiper_box {
-      height: 600px;
-      width: 30%;
+      height: 720px;
+      width: 1200px;
+      margin-right: 15px;
       background-color: black;
       display: flex;
       justify-content: center;
@@ -161,8 +195,12 @@ onMounted(() => {
       position: absolute;
       z-index: 999;
       background-color: white;
-      left: 50%;
-      top: 30%;
+      border-radius: 45px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      left: 45%;
+      top: 50%;
       transform: translate(-380px, -50%);
     }
 
@@ -172,8 +210,12 @@ onMounted(() => {
       position: absolute;
       z-index: 999;
       background-color: white;
-      right: 50%;
-      top: 30%;
+      display: flex;
+      border-radius: 45px;
+      justify-content: center;
+      align-items: center;
+      right: 45%;
+      top: 50%;
       transform: translate(380px, -50%);
     }
 
