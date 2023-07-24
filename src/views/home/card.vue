@@ -3,6 +3,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Draggable } from 'gsap/Draggable';
 import { onMounted } from 'vue';
+import { inputEmits } from 'element-plus';
 gsap.registerPlugin(ScrollTrigger, Draggable);
 onMounted(() => {
   const boxes = gsap.utils.toArray('.swiper_box');
@@ -14,7 +15,7 @@ onMounted(() => {
   const startX = boxes[0].offsetLeft;
 
   const pixelSpeed = 1 * 100;
-  const snap = gsap.utils.snap(1)
+  const snap = gsap.utils.snap(1);
   
   let widths = [],
     xPercents = [];
@@ -25,13 +26,13 @@ onMounted(() => {
     })
   }
   populateWdith();
-
   gsap.set(boxes, {
     // x: -startX
     xPercent: 0
   })
-
   const totalWidth = snap(boxes[boxes.length-1].offsetLeft - boxes[0].offsetLeft + gsap.getProperty(boxes[0], 'width'));//最后一个块离屏幕左侧距离
+  console.log(totalWidth);
+
   boxes.forEach((el, index) => {
     const distanceToStart = el.offsetLeft - startX;
     const distanceToLoop = distanceToStart + widths[index];
@@ -48,50 +49,47 @@ onMounted(() => {
     }, distanceToLoop / pixelSpeed)
     .add("label" + index, distanceToStart / pixelSpeed)
   })
-
-  loop.progress(1, true).progress(0, true);
-  let startProgess = null,
-      ratio = null,
-      dragSnap = null,
-      wrap = gsap.utils.wrap(0, 1),
-      roundFactor = null,
-      snapi = gsap.utils.snap(0.14);
+  const wrap = gsap.utils.wrap(0, 1);
+  const ratio = 1 / totalWidth;
+  const dragSnap = totalWidth / boxes.length;
+  let startProgress = null;
+  let startPage = 4;
+  let snapi = null;
+  loop.progress(ratio * dragSnap * startPage);// 第一项位置为4
+  
   const draggable = Draggable.create('.drag-proxy', {
     trigger: '#layout_box',
     type: "x",
-    edgeResistance: 0.65,
       onPress() {
-        startProgess = loop.progress();
-        loop.progress(0);
-        ratio = 1 / totalWidth;
-        dragSnap = totalWidth / boxes.length;
-        console.log(wrap(startProgess + (this.startX - this.x) * ratio));
-        roundFactor = Math.pow(10, ((dragSnap + "").split(".")[1] || "").length);
-
-        loop.progress(startProgess);
+        startProgress = loop.progress();
+        loop.progress(startProgress);
       },
       onDrag(){
-        
-        console.log(wrap(startProgess + (this.startX - this.x) * ratio));
-        loop.progress(wrap(startProgess + (this.startX - this.x) * ratio))
+        return loop.progress(wrap(startProgress + (this.startX - this.x) * ratio));
+       
+      },
+      onDragEnd(){
+        console.log(this.x, 'end');
+        snapi = this.x
       },
       onThrowUpdate(){
-        loop.progress(snapi(wrap(startProgess + (this.startX - this.x) * ratio)))
+        return loop.progress(wrap(startProgress + (this.startX - this.x) * ratio));
       },
       inertia: true,
-      snap: {
-        x: function(value) {
-
-   
-          return 0.14
-        }
+      snap: val => {
+        console.log(val);
+        return Math.round(snapi - val);
+        let n = Math.round(parseFloat(val) / dragSnap)
       },
       onRelease(){
-        Math.round(loop.progress() * boxes.length)
+        
       },
-      onThrowComplete: () => {return gsap.set(proxy, {x: 0}) && loop.progress() * boxes.length}
-  })[0]
+      onThrowComplete(){
 
+      }
+  })
+
+  loop.draggable = draggable;
 
 
 
