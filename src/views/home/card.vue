@@ -59,8 +59,9 @@ onMounted(() => {
   console.log(snap_sec);
   let transform_start = null;
   let transform_end = null;
+  loop.progress(1, true).progress(0, true);
   loop.progress(ratio * dragSnap * startPage);// 第一项位置为4
-
+  console.log(loop);
   const draggable = Draggable.create('.drag-proxy', {
     trigger: '#layout_box',
     type: "x",
@@ -90,17 +91,14 @@ onMounted(() => {
   })
   loop.draggable = draggable;
   document.querySelector('#prev').addEventListener('click', () => {
-    let plan = loop.progress() - 1 / boxes.length;
+    
 
-    gsap.to(draggable,  {
-      onDragEnd(){ wrap(plan)},
-    })
   });
   document.querySelector('#next').addEventListener('click', () => {
     gsap.fromTo(loop, {
       progress: loop.progress()
     }, {
-      progress: loop.progress() + 1 / boxes.length,
+      progress: snap_sec(loop.progress() + 1 / boxes.length),
       
     })
     console.log(loop.progress(), "next");
