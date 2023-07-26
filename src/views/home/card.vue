@@ -70,6 +70,7 @@ onMounted(() => {
     },
     onDrag() {
       loop.progress(wrap(startProgress + (this.startX - this.x) * ratio));
+      console.log(wrap(startProgress + (this.startX - this.x) * ratio), '111')
       transform_start = loop.progress()
     },
     onDragEnd() {
@@ -77,58 +78,24 @@ onMounted(() => {
       gsap.fromTo(loop, {
         progress: transform_start
       }, {
-        progress: transform_end
+        progress: transform_end,
+        ease: "back.out(1.2)",
+        duration: 0.25
       })
     },
     onThrowUpdate() {
       loop.progress(wrap(startProgress + (this.startX - this.x) * ratio));
+      transform_start = loop.progress()
     },
   })
   loop.draggable = draggable;
   document.querySelector('#prev').addEventListener('click', () => {
     let plan = loop.progress() - 1 / boxes.length;
-    if (plan < 0) {
-      plan+=1
-    }
-    console.log(loop.progress(), plan);
-    if (loop.progress() - 1 / boxes.length < 0) {
-      gsap.timeline().fromTo(loop, {
-        progress: loop.progress()
-      },{
-        progress: loop.progress(0)
-      }).to(loop,{
-        onUpdate: () => {
-          console.log(loop);
-          
-        } 
-      })
-      console.log(loop.progress(), '123');
-      let o = loop.progress() - 1 / boxes.length;
-      gsap.fromTo(loop, {
-        progress: loop.progress()
-      }, {
-        reversed: true,
-        progress: loop.progress(o + 1) ,
-      })
-    }
-    gsap.fromTo(loop, {
-      progress: loop.progress()
-    }, {
-      progress: plan,
+
+    gsap.to(draggable,  {
+      onDragEnd(){ wrap(plan)},
     })
   });
-
-
-
-
-
-
-
-
-
-
-
-
   document.querySelector('#next').addEventListener('click', () => {
     gsap.fromTo(loop, {
       progress: loop.progress()
@@ -157,9 +124,7 @@ onMounted(() => {
         <div id="prev">左</div>
         <div id="next">右</div>
       </div>
-      <ul id="stone">
-        <li v-for="item in 15"></li>
-      </ul>
+
       <div class="drag-proxy"></div>
     </div>
   </div>
