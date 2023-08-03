@@ -8,19 +8,21 @@ import { GAP } from 'element-plus';
 gsap.registerPlugin(ScrollTrigger, Draggable);
 onMounted(() => {
   const boxes = gsap.utils.toArray('.swiper_box');
+  gsap.set(boxes, {
+    marginRight: 20
+  })
   let loop = gsap.timeline({
     paused: true,
     repeat: -1,
     defaults: { ease: 'none' },
     onReverseComplete: () => loop.totalTime(loop.rawTime() + loop.duration() * 100)
   });
-  const startX = boxes[0].offsetLeft;
+
 
   const pixelSpeed = 1 * 100;
   const snap = gsap.utils.snap(1);
-  gsap.set(boxes, {
-    marginRight: 20
-  })
+
+  const startX = boxes[0].offsetLeft;
   let widths = [],
     xPercents = [];
   function populateWdith() {
@@ -31,16 +33,15 @@ onMounted(() => {
   }
   populateWdith();
   const totalWidth = computed(() => {
-    if(boxes[0].offsetLeft < 0){
-      return Math.abs(boxes[0].offsetLeft) + Math.abs(boxes[boxes.length-1].offsetLeft) + gsap.getProperty(boxes[boxes.length-1], "width");
-    }else{
-      return Math.abs(boxes[boxes.length-1].offsetLeft) + gsap.getProperty(boxes[boxes.length-1], "width");
+    if (boxes[0].offsetLeft < 0) {
+      return Math.abs(boxes[0].offsetLeft) + Math.abs(boxes[boxes.length - 1].offsetLeft) + gsap.getProperty(boxes[boxes.length - 1], "width");
+    } else {
+      return Math.abs(boxes[boxes.length - 1].offsetLeft) + gsap.getProperty(boxes[boxes.length - 1], "width");
     }
   })//总宽度
   const times = [];
   boxes.forEach((el, index) => {
     const distanceToStart = el.offsetLeft - startX;
-    console.log(distanceToStart);
     const distanceToLoop = distanceToStart + widths[index];
     loop.to(el, {
       xPercent: snap((-distanceToLoop) / widths[index] * 100),
@@ -53,9 +54,10 @@ onMounted(() => {
       duration: (totalWidth.value - distanceToLoop + gsap.getProperty('.swiper_box', 'marginRight')) / pixelSpeed,
       immediateRender: false
     }, distanceToLoop / pixelSpeed)
-    .add("label" + index, distanceToStart / pixelSpeed)
+      .add("label" + index, distanceToStart / pixelSpeed)
     times[index] = distanceToStart / pixelSpeed
   });
+  console.log(loop, 'time');
   console.log(times);
   const wrap = gsap.utils.wrap(0, 1);
   const ratio = 1 / totalWidth.value;
@@ -69,7 +71,7 @@ onMounted(() => {
   const scope = gsap.utils.wrap(0, 7)
   let num = 4;
   loop.seek(times[num]);
-  
+
   // loop.progress(ratio * dragSnap * startPage);// 第一项位置为4
   const draggable = Draggable.create('.drag-proxy', {
     trigger: '#layout_box',
@@ -80,7 +82,6 @@ onMounted(() => {
     },
     onDrag() {
       loop.progress(wrap(startProgress + (this.startX - this.x) * ratio));
-      console.log(wrap(startProgress + (this.startX - this.x) * ratio), '111')
       transform_start = loop.progress()
     },
     onRelease() {
@@ -99,25 +100,27 @@ onMounted(() => {
     },
   })
   loop.draggable = draggable;
+  loop.times = times
   const toIndex = (index) => {
-    
-    (Math.abs(index - num > boxes.length / 2) && (index += index > num ? -boxes.length : boxes.length));
+    (Math.abs(index - num) > boxes.length / 2) && (index += index > num ? -boxes.length : boxes.length);
     let newIndex = gsap.utils.wrap(0, boxes.length, index);
     let time = times[newIndex];
-    if(time > loop.time() !== index > num){
+    console.log(time, '123');
+    if (time > loop.time() !== index > num) {
       time += loop.duration() * (index > num ? 1 : -1);
     }
     num = newIndex;
-    console.log(time);
     return loop.tweenTo(time, {
-      duration: 1
+      duration: 0.4,
+      ease: "power1.inOut",
+      overwrite: true
     })
   }
   const prev = document.querySelector('#prev').addEventListener('click', () => {
-    toIndex(num  - 1)
+    toIndex(num - 1)
   })
   const next = document.querySelector('#next').addEventListener('click', () => {
-    toIndex(num  + 1)
+    toIndex(num + 1)
   })
   boxes.forEach((item, index) => {
     item.addEventListener('click', () => {
