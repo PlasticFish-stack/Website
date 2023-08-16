@@ -8,7 +8,7 @@ import { GAP } from 'element-plus';
 gsap.registerPlugin(ScrollTrigger, Draggable);
 
 
-const block = new Array(7);
+const block = new Array(377);
 for (let i = 0; i < block.length; i++) {
   block[i] = 'display' + i
 }//块显示内容
@@ -16,7 +16,7 @@ for (let i = 0; i < block.length; i++) {
 
 onMounted(() => {
   const box = gsap.utils.toArray('.swiper_box');
-  const margin = 10;
+  const margin = 30;
   gsap.set(box, {
     marginRight: margin
   })
@@ -44,7 +44,7 @@ onMounted(() => {
     const { width, speed, xStart, xEnd, totalWidth, snap } = initBox;
 
     const start = el.offsetLeft - xStart;
-    const end = totalWidth() + margin - start;
+    const end = totalWidth() + margin * 3/4 - start;
     console.table({
       'start': start,
       'end': end,
@@ -69,7 +69,7 @@ onMounted(() => {
   loop.progress(1, true).progress(0, true);
 
 
-  const curStart = ((document.querySelector('#layout_box').offsetWidth / 2) - initBox.width / 2) + (Math.abs(box[0].offsetLeft) + initBox.width);
+  const curStart = ((document.querySelector('#layout_box').offsetWidth / 2) - initBox.width / 2) - margin+  (Math.abs(box[0].offsetLeft) + initBox.width);
 
   const timeWrap = gsap.utils.wrap(0, loop.duration());
   times.forEach((t, i) => {
@@ -243,6 +243,7 @@ onMounted(() => {
 
 <template>
   <div id="main">
+    
     <div id="flow">
       <span id="flow_top">视频中心</span>
       <span id="flow_center">VIDEO CENTER</span>
@@ -254,6 +255,7 @@ onMounted(() => {
         {{ item }}
       </div>
       <div>
+        
         <div id="prev">左</div>
         <div id="next">右</div>
       </div>
@@ -265,8 +267,7 @@ onMounted(() => {
 <style lang="scss" scoped>
 #main {
   width: 100%;
-  // height: calc(100vh - 150px);
-  height: calc(100vh - 150px);
+  height: calc(100vh - 5rem);
   display: flex;
   color: red;
   background-color: #fffef9;
@@ -283,13 +284,16 @@ onMounted(() => {
     align-items: center;
     justify-content: center;
     color: #2b3138;
+    border: 1px solid blue;
 
     #flow_top {
+      border: 1px solid blue;
       -webkit-text-stroke: black 0.3px;
       text-transform: uppercase;
     }
 
     #flow_center {
+      border: 1px solid blue;
       margin-top: 10px;
       -webkit-text-stroke: black 0.3px;
     }
@@ -298,9 +302,7 @@ onMounted(() => {
   #layout_box {
     overflow-x: hidden;
     width: 100%;
-    border: 1px solid black;
     position: relative;
-    height: 720px;
     display: flex;
     justify-content: center;
 
