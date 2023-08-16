@@ -8,7 +8,7 @@ import { GAP } from 'element-plus';
 gsap.registerPlugin(ScrollTrigger, Draggable);
 
 
-const block = new Array(377);
+const block = new Array(7);
 for (let i = 0; i < block.length; i++) {
   block[i] = 'display' + i
 }//块显示内容
@@ -24,6 +24,7 @@ onMounted(() => {
     repeat: -1,
     paused: true,
     defaults: { ease: 'none' },
+    onReverseComplete: () => loop.totalTime(loop.rawTime() + loop.duration() * 100)
   });
 
   const initBox = {
@@ -45,12 +46,12 @@ onMounted(() => {
 
     const start = el.offsetLeft - xStart;
     const end = totalWidth() + margin * 3/4 - start;
-    console.table({
-      'start': start,
-      'end': end,
-      'elLeft': el.offsetLeft,
-      'xStart': xStart
-    });
+    // console.table({
+    //   'start': start,
+    //   'end': end,
+    //   'elLeft': el.offsetLeft,
+    //   'xStart': xStart
+    // });
     loop.to(el, {
       xPercent: -snap(start / width * 100),
       duration: start / speed,
@@ -69,7 +70,7 @@ onMounted(() => {
   loop.progress(1, true).progress(0, true);
 
 
-  const curStart = ((document.querySelector('#layout_box').offsetWidth / 2) - initBox.width / 2) - margin+  (Math.abs(box[0].offsetLeft) + initBox.width);
+  const curStart = ((document.querySelector('#layout_box').offsetWidth / 2) - initBox.width / 2) + margin/2 - margin +  (Math.abs(box[0].offsetLeft) + initBox.width);
 
   const timeWrap = gsap.utils.wrap(0, loop.duration());
   times.forEach((t, i) => {
@@ -77,24 +78,47 @@ onMounted(() => {
   })
   loop.seek(times[0])
   const wrap = gsap.utils.wrap(0, 1);
+  
+  const newArr = [];
+  const loopProgress = loop.progress();
+  times.forEach((item, index) => {
+    newArr[index] = wrap(loopProgress + index * (1 / box.length));
+  })
+  console.log(newArr);
+  const init = +gsap.utils.snap(newArr, 0);
+  const ratio = gsap.utils.snap(1 / box.length);
+
+  let animaDraggable = null;
   const draggable = Draggable.create('.drag-proxy', {
     trigger: '#layout_box',
     type: "x",
-    onPress() {
+    onPressInit() {
       initBox.draggableStart = loop.progress();
-      
     },
     onDrag() {
       loop.progress(wrap(initBox.draggableStart + (this.startX - this.x) * (1 / initBox.totalWidth())));
       initBox.draggableEnd = loop.progress();
     },
-    onRelease() {
-    },
-    onThrowUpdate() {
+    onDragEnd() {
+      animaDraggable = initBox.draggableStart + ratio((this.startX - this.x)* (1 / initBox.totalWidth()));
+      console.log(initBox.draggableEnd,'123');
+      console.log(animaDraggable,'233');
+      console.log(ratio((this.startX - this.x)* (1 / initBox.totalWidth())), 'test');
+      
+      gsap.fromTo(loop, {
+        progress: initBox.draggableEnd
+      }, {
+        progress: animaDraggable,
+        ease: "back.out(1.1)",
+        duration: 0.4
+      })
+      console.log(animaDraggable);
     },
   })
   loop.draggable = draggable;
+  const lip = () => {
 
+  }
 
 
   // const boxes = gsap.utils.toArray('.swiper_box');
