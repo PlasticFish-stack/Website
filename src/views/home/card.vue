@@ -4,7 +4,7 @@ import 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Draggable } from 'gsap/Draggable';
 import { computed, onMounted } from 'vue';
-import { GAP } from 'element-plus';
+import * as math from 'mathjs';
 gsap.registerPlugin(ScrollTrigger, Draggable);
 
 
@@ -12,7 +12,6 @@ const block = new Array(7);
 for (let i = 0; i < block.length; i++) {
   block[i] = 'display' + i
 }//块显示内容
-
 
 onMounted(() => {
   const box = gsap.utils.toArray('.swiper_box');
@@ -22,14 +21,14 @@ onMounted(() => {
   })
   const loop = gsap.timeline({
     repeat: -1,
-    paused: true,
+    paused: false,
     defaults: { ease: 'none' },
     onReverseComplete: () => loop.totalTime(loop.rawTime() + loop.duration() * 100)
   });
 
   const initBox = {
     width: gsap.getProperty(box[0], 'width'),
-    speed: 100,
+    speed: 300,
     xStart: box[0].offsetLeft,
     xEnd: box[box.length - 1].offsetLeft,
     totalWidth: () => {
@@ -39,34 +38,39 @@ onMounted(() => {
     draggableStart : null,
     draggableEnd: null
   };
-  initBox.totalWidth()
+  console.log(box[box.length - 1]);
+  console.table({
+    'box[0]' : box[0].offsetLeft,
+    'box[999]' : box[box.length - 1].offsetLeft,
+    'width' : initBox.width
+  });
+  const snap_fromTo =  gsap.utils.snap(100);
+  const liam = gsap.utils.snap(parseInt((box[1].offsetLeft - initBox.xStart)/  initBox.width * 100));
+  console.log(liam(120), 'liam');
   let times = [];
   box.forEach((el, index) => {
     const { width, speed, xStart, xEnd, totalWidth, snap } = initBox;
-
     const start = el.offsetLeft - xStart;
-    const end = totalWidth() + margin - start;
-    console.log(totalWidth() + margin - start, '123');
-    // console.table({
-    //   'start': start,
-    //   'end': end,
-    //   'elLeft': el.offsetLeft,
-    //   'xStart': xStart
-    // });
-    loop.to(el, {
-      xPercent: -snap(start / width * 100),
-      duration: start / speed,
-      ease: 'none'
-    }, 0).fromTo(el, {
-      xPercent: snap(end / width * 100)
+    const end = totalWidth() - start;
+    console.table({
+      'value' : snap(liam(end / width * 100)),
+      'time' : end / speed
+    });
+    // loop.to(el, {
+    //   xPercent: -snap(liam(start / width * 100)),
+    //   duration: start / speed,
+    //   ease: 'none'
+    // }, 0)
+    loop.fromTo(el, {
+      xPercent: snap(liam(end / width * 100))
     }, {
       xPercent: 0,
       ease: 'none',
-      duration: end  / speed,
+      duration: end / speed,
       immediateRender: false,
     }, start / speed).add('label' + index, start / speed);
     times[index] = start / speed
-    
+
   })
   loop.progress(1, true).progress(0, true);
 
@@ -345,6 +349,8 @@ onMounted(() => {
       justify-content: center;
       align-items: center;
       flex-shrink: 0;
+      box-sizing: content-box;
+      border: 5px solid green;
     }
 
     #prev {
