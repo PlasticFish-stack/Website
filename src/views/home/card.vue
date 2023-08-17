@@ -45,7 +45,8 @@ onMounted(() => {
     const { width, speed, xStart, xEnd, totalWidth, snap } = initBox;
 
     const start = el.offsetLeft - xStart;
-    const end = totalWidth() + margin * 3/4 - start;
+    const end = totalWidth() + margin - start;
+    console.log(totalWidth() + margin - start, '123');
     // console.table({
     //   'start': start,
     //   'end': end,
@@ -101,9 +102,7 @@ onMounted(() => {
     },
     onDragEnd() {
       animaDraggable = initBox.draggableStart + ratio((this.startX - this.x)* (1 / initBox.totalWidth()));
-      console.log(initBox.draggableEnd,'123');
-      console.log(animaDraggable,'233');
-      console.log(ratio((this.startX - this.x)* (1 / initBox.totalWidth())), 'test');
+
       
       gsap.fromTo(loop, {
         progress: initBox.draggableEnd
@@ -112,14 +111,22 @@ onMounted(() => {
         ease: "back.out(1.1)",
         duration: 0.4
       })
-      console.log(animaDraggable);
+   
+      console.log(loop.iteration(), 'testttttt');
     },
   })
   loop.draggable = draggable;
-  const lip = () => {
 
+  const wrap_test = gsap.utils.wrap(0, 1)
+  let io = loop.progress();
+  const lip = (test) => {
+    io = wrap_test(io - (1 / box.length))
+    loop.progress(io)
+    
   }
-
+  document.querySelector('#prev').addEventListener('click', () => {
+    lip()
+  })
 
   // const boxes = gsap.utils.toArray('.swiper_box');
   // const boxes_parentNode = boxes[0].parentNode;
