@@ -15,24 +15,26 @@ for (let i = 0; i < block.length; i++) {
 
 onMounted(() => {
   const box = gsap.utils.toArray('.swiper_box');
+  console.log(box);
   const margin = 30;
   gsap.set(box, {
     marginRight: margin
   })
   const loop = gsap.timeline({
     repeat: -1,
-    paused: false,
+    paused: true,
+    // reversed: true,
     defaults: { ease: 'none' },
     onReverseComplete: () => loop.totalTime(loop.rawTime() + loop.duration() * 100)
   });
-
+  console.log(loop.progress(), 'progress');
   const initBox = {
     width: gsap.getProperty(box[0], 'width'),
     speed: 300,
     xStart: box[0].offsetLeft,
     xEnd: box[box.length - 1].offsetLeft,
     totalWidth: () => {
-      return initBox.xEnd - initBox.xStart + initBox.width
+      return initBox.xEnd - initBox.xStart + initBox.width + margin
     },
     snap: gsap.utils.snap(1),
     draggableStart : null,
@@ -40,60 +42,61 @@ onMounted(() => {
   };
   console.log(box[box.length - 1]);
   console.table({
-    'box[0]' : box[0].offsetLeft,
-    'box[999]' : box[box.length - 1].offsetLeft,
+    'xStart' : box[0].offsetLeft,
+    'xEnd' : box[box.length - 1].offsetLeft,
     'width' : initBox.width
   });
-  const snap_fromTo =  gsap.utils.snap(100);
-  const liam = gsap.utils.snap(parseInt((box[1].offsetLeft - initBox.xStart)/  initBox.width * 100));
-  console.log(liam(120), 'liam');
   let times = [];
+  let num = [];
   box.forEach((el, index) => {
     const { width, speed, xStart, xEnd, totalWidth, snap } = initBox;
     const start = el.offsetLeft - xStart;
     const end = totalWidth() - start;
     console.table({
-      'value' : snap(liam(end / width * 100)),
-      'time' : end / speed
+      'value' : start,
+      'time' : totalWidth()
     });
-    // loop.to(el, {
-    //   xPercent: -snap(liam(start / width * 100)),
-    //   duration: start / speed,
-    //   ease: 'none'
-    // }, 0)
+    loop.to(el, {
+      xPercent: -snap((start / width * 100)),
+      duration: start / speed,
+      ease: 'none'
+    }, 0)
     loop.fromTo(el, {
-      xPercent: snap(liam(end / width * 100))
+      xPercent: end / width * 100
     }, {
       xPercent: 0,
       ease: 'none',
       duration: end / speed,
       immediateRender: false,
     }, start / speed).add('label' + index, start / speed);
-    times[index] = start / speed
-
+    times[index] = start / speed;
+    num[index] = index + 1
   })
   loop.progress(1, true).progress(0, true);
-
-
-  const curStart = ((document.querySelector('#layout_box').offsetWidth / 2) - initBox.width / 2) + margin/2 - margin +  (Math.abs(box[0].offsetLeft) + initBox.width);
-
+  const ratio = gsap.utils.snap((1 / initBox.totalWidth() * (4905/4)) );
+  const curStart = ((document.querySelector('#layout_box').offsetWidth / 2) - (initBox.width / 2))   +  (Math.abs(box[0].offsetLeft) + initBox.width);
+  console.log(curStart, 'cur');
   const timeWrap = gsap.utils.wrap(0, loop.duration());
   times.forEach((t, i) => {
     times[i] = +(timeWrap(times[i] + curStart * loop.duration() / initBox.totalWidth()).toFixed(2))
   })
   loop.seek(times[0])
+  console.log(loop.progress(),'now');
   const wrap = gsap.utils.wrap(0, 1);
   
   const newArr = [];
   const loopProgress = loop.progress();
   times.forEach((item, index) => {
-    newArr[index] = wrap(loopProgress + index * (1 / box.length));
+    newArr[index] = ratio(wrap(loopProgress + index * (1 / box.length)));
   })
-  console.log(newArr);
+  console.log(newArr,'newarr');
   const init = +gsap.utils.snap(newArr, 0);
-  const ratio = gsap.utils.snap(1 / box.length);
-
   let animaDraggable = null;
+  console.log((1 / box.length) * 4, 'testt');
+  const numRatio = gsap.utils.snap(num);
+  console.log(numRatio((4905/1200)), 'numra');
+  console.log(num);
+  console.log((1 / initBox.totalWidth() * (4905/4)), 'test');
   const draggable = Draggable.create('.drag-proxy', {
     trigger: '#layout_box',
     type: "x",
@@ -103,11 +106,11 @@ onMounted(() => {
     onDrag() {
       loop.progress(wrap(initBox.draggableStart + (this.startX - this.x) * (1 / initBox.totalWidth())));
       initBox.draggableEnd = loop.progress();
+      console.log(loop.progress());
     },
     onDragEnd() {
-      animaDraggable = initBox.draggableStart + ratio((this.startX - this.x)* (1 / initBox.totalWidth()));
-
-      
+      animaDraggable = ratio(wrap(initBox.draggableEnd));
+      console.log(animaDraggable, 'ani');
       gsap.fromTo(loop, {
         progress: initBox.draggableEnd
       }, {
@@ -287,7 +290,10 @@ onMounted(() => {
 
     <div id="layout_box">
       <div class="swiper_box" :key="item" v-for="item in block">
-        {{ item }}
+        <div style="border: 1px solid red;">
+          {{ item }}
+        </div>
+        
       </div>
       <div>
         
@@ -319,16 +325,13 @@ onMounted(() => {
     align-items: center;
     justify-content: center;
     color: #2b3138;
-    border: 1px solid blue;
 
     #flow_top {
-      border: 1px solid blue;
       -webkit-text-stroke: black 0.3px;
       text-transform: uppercase;
     }
 
     #flow_center {
-      border: 1px solid blue;
       margin-top: 10px;
       -webkit-text-stroke: black 0.3px;
     }
@@ -349,8 +352,6 @@ onMounted(() => {
       justify-content: center;
       align-items: center;
       flex-shrink: 0;
-      box-sizing: content-box;
-      border: 5px solid green;
     }
 
     #prev {
