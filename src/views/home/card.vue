@@ -73,15 +73,18 @@ onMounted(() => {
     num[index] = index + 1
   })
   loop.progress(1, true).progress(0, true);
-  const ratio = gsap.utils.snap((1 / initBox.totalWidth() * (4905/4)) );
+  const ratio = gsap.utils.snap((1 / initBox.totalWidth() * 1225) );
   const curStart = ((document.querySelector('#layout_box').offsetWidth / 2) - (initBox.width / 2))   +  (Math.abs(box[0].offsetLeft) + initBox.width);
   console.log(curStart, 'cur');
   const timeWrap = gsap.utils.wrap(0, loop.duration());
   times.forEach((t, i) => {
     times[i] = +(timeWrap(times[i] + curStart * loop.duration() / initBox.totalWidth()).toFixed(2))
   })
-  loop.seek(times[0])
+  console.log(times);
+  loop.seek(0);
   console.log(loop.progress(),'now');
+  loop.resume();
+  console.log(loop.progress(),'noww');
   const wrap = gsap.utils.wrap(0, 1);
   
   const newArr = [];
@@ -89,14 +92,16 @@ onMounted(() => {
   times.forEach((item, index) => {
     newArr[index] = ratio(wrap(loopProgress + index * (1 / box.length)));
   })
-  console.log(newArr,'newarr');
-  const init = +gsap.utils.snap(newArr, 0);
   let animaDraggable = null;
   console.log((1 / box.length) * 4, 'testt');
   const numRatio = gsap.utils.snap(num);
-  console.log(numRatio((4905/1200)), 'numra');
+  console.log(loop.progress(), 'numra');
   console.log(num);
   console.log((1 / initBox.totalWidth() * (4905/4)), 'test');
+  let now = 0;
+  const nowi = gsap.utils.wrap(0, 7);
+  console.log(nowi(-1) ,'biwuuu');
+  const nowii = gsap.utils.wrap(0, loop.duration())
   const draggable = Draggable.create('.drag-proxy', {
     trigger: '#layout_box',
     type: "x",
@@ -106,20 +111,29 @@ onMounted(() => {
     onDrag() {
       loop.progress(wrap(initBox.draggableStart + (this.startX - this.x) * (1 / initBox.totalWidth())));
       initBox.draggableEnd = loop.progress();
-      console.log(loop.progress());
     },
     onDragEnd() {
       animaDraggable = ratio(wrap(initBox.draggableEnd));
-      console.log(animaDraggable, 'ani');
-      gsap.fromTo(loop, {
-        progress: initBox.draggableEnd
-      }, {
-        progress: animaDraggable,
-        ease: "back.out(1.1)",
-        duration: 0.4
-      })
-   
-      console.log(loop.iteration(), 'testttttt');
+      // console.log(animaDraggable, 'ani');
+      // gsap.fromTo(loop, {
+      //   progress: initBox.draggableEnd
+      // }, {
+      //   progress: animaDraggable,
+      //   ease: "back.out(1.1)",
+      //   duration: 0.4
+      // })
+      if(animaDraggable > initBox.draggableEnd){
+        console.log(loop,'123');
+        now = nowi(now+1)
+      }else{
+        console.log(loop,'223');
+        now = nowi(now-1)
+        
+      }
+      console.log(now, 'now');
+      loop.tweenTo(nowii(times[now] + 4.1), {duration: 1})
+      
+      console.log(nowii(times[now] + 4.1), 'testttttt');
     },
   })
   loop.draggable = draggable;
