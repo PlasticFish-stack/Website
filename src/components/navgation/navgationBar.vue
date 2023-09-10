@@ -40,9 +40,6 @@ const deformBox = () => {
   }
 }
 onMounted(() => {
-  
-  console.log(document.body.clientHeight)
-  console.log(document.getElementById('navgation'));
   if(!localStorage.getItem('locale')){
     return
   }else{
