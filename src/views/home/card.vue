@@ -72,7 +72,7 @@ onMounted(() => {
   loop.seek(times[0])
   const wrap = gsap.utils.wrap(0, 1);
 
-  let io = new Array(8);
+  let io = new Array(box.length);
 
   for (let i = 0; i < box.length; i++) {
     io[i] = wrap(loop.progress() + (1 / initBox.totalWidth() * 1310) * i)
@@ -94,46 +94,50 @@ onMounted(() => {
     type: "x",
     onPressInit() {
       initBox.draggableStart = loop.progress();
+      console.log(io);
     },
     onDrag() {
       loop.progress(wrap(initBox.draggableStart + (this.startX - this.x) * (1 / initBox.totalWidth())));
       initBox.draggableEnd = loop.progress();
-
     },
     onDragEnd() {
+      console.log(initBox.draggableEnd);
       animaDraggable = ratio(wrap(initBox.draggableEnd));
-      gsap.fromTo(loop, {
-        progress: initBox.draggableEnd
-      }, {
-        progress: animaDraggable,
-        ease: "back.out(1.1)",
-        duration: 0.4
-      })
-    },
+      console.log(io.indexOf(animaDraggable));
+      // gsap.fromTo(loop, {
+      //   progress: initBox.draggableEnd
+      // }, {
+      //   progress: animaDraggable,
+      //   ease: "back.out(1.1)",
+      //   duration: 0.4
+      // })
+      toIndex(io.indexOf(animaDraggable))
+    }, 
   })
   loop.draggable = draggable;
-
 
   //test
   let config= {};
   let time = null;
   let nowIndex = 0;
-  box.forEach((item, index) => {
-    item.addEventListener('click', () => {
-      time = times[index];
-      console.log({'time': time, 'now': loop.time() , 'index' : index, 'nowindex': nowIndex});
-      if(time < loop.time() && index > nowIndex){
-        console.log(time);
-        time = time  + loop.duration();
-        console.log(time);
-        console.log('chus');
-      }else if(time < loop.time() && index < nowIndex){
-        time = -time+loop.duration()
-        console.log('1');
+  console.log(loop.duration());
+  console.log(times);
+  const timing = loop.duration() / box.length;
+  function toIndex(index){
+    time = times[index];
+      if(time < loop.time() && index > nowIndex && +Math.abs(time - loop.time()).toFixed(1) / +Math.abs(index-nowIndex) >= timing){
+        time = +((time + loop.duration()).toFixed(1));
+      }else if(time > loop.time()  && index < nowIndex && +Math.abs(time - loop.time()).toFixed(1) / +Math.abs(index-nowIndex) >= timing){
+        config.modifiers = {time: gsap.utils.wrap(0, loop.duration())}
+        time = +((loop.time()-(timing * +Math.abs(index-nowIndex))).toFixed(1));
       }
       nowIndex = index
-      config.duration = 1
+      config.duration = 0.7
       loop.tweenTo(time, config)
+  }
+  box.forEach((item, index) => {
+    item.addEventListener('click', () => {
+      toIndex(index)
     })
   })
 
@@ -162,7 +166,7 @@ onMounted(() => {
 
     <div id="layout_box">
       <div class="swiper_box" :key="item" v-for="item in block">
-        <div style="border: 1px solid red;">
+        <div style="border: 1px solid red;font-size: 50px;">
           {{ item }}
         </div>
 
