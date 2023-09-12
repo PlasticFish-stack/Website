@@ -29,7 +29,7 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
-div {
+.bar {
   height: 5rem;
   width: 100%;
   background-color: #fffef9;

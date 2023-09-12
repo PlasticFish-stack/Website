@@ -123,8 +123,13 @@ onMounted(() => {
       time = times[index];
       console.log({'time': time, 'now': loop.time() , 'index' : index, 'nowindex': nowIndex});
       if(time < loop.time() && index > nowIndex){
-        time += loop.duration();
+        console.log(time);
+        time = time  + loop.duration();
+        console.log(time);
         console.log('chus');
+      }else if(time < loop.time() && index < nowIndex){
+        time = -time+loop.duration()
+        console.log('1');
       }
       nowIndex = index
       config.duration = 1
@@ -174,7 +179,7 @@ onMounted(() => {
 </template>
 <style lang="scss" scoped>
 #main {
-  width: 100%;
+  width: 100vw;
   height: calc(100vh - 5rem);
   display: flex;
   color: red;
@@ -205,7 +210,7 @@ onMounted(() => {
   }
 
   #layout_box {
-    overflow-x: hidden;
+    overflow: hidden;
     width: 100%;
     position: relative;
     display: flex;
