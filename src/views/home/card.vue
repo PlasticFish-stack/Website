@@ -13,9 +13,11 @@ for (let i = 0; i < block.length; i++) {
 
 onMounted(() => {
   const box = gsap.utils.toArray('.swiper_box');
-  const margin = 30;
+  const margin = 30
+  const color = ['#00828b', '#276893', '#37344c', '#004db5', '#e67a2a', '#afc8ba', '#b65b46', '#c6574b', '#a22076', '#423171', '#c3a6cb'];
   gsap.set(box, {
-    marginRight: margin
+    marginRight: margin,
+    backgroundColor: gsap.utils.wrap(color)
   })
   const loop = gsap.timeline({
     repeat: -1,
@@ -132,8 +134,10 @@ onMounted(() => {
         time = +((loop.time()-(timing * +Math.abs(index-nowIndex))).toFixed(1));
       }
       nowIndex = index
-      config.duration = 0.7
-      loop.tweenTo(time, config)
+      config.duration = 0.7;
+      config.overwrite = true;
+      console.log(config);
+      return loop.tweenTo(time, {duration: 0.7, overwrite: false})
   }
   box.forEach((item, index) => {
     item.addEventListener('click', () => {
