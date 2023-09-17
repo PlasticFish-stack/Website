@@ -19,6 +19,7 @@ onMounted(() => {
     marginRight: margin,
     backgroundColor: gsap.utils.wrap(color)
   })
+  let length = box.length;
   const loop = gsap.timeline({
     repeat: -1,
     paused: true,
@@ -89,62 +90,84 @@ onMounted(() => {
     newArr[index] = ratio(wrap(loopProgress + index * (1 / box.length)));
   })
   let animaDraggable = null
-
-  let nowPage = 0;
+  let tweenLoop = null;
+  let nowIndex = 0;
+  let startX = 0;
+  let ratioStart = gsap.utils.snap((1 / initBox.totalWidth() * (initBox.width + margin)));
+  let wrapIndex = gsap.utils.wrap(0, box.length);
+  let curIndex = 0
   const draggable = Draggable.create('.drag-proxy', {
     trigger: '#layout_box',
     type: "x",
     onPressInit() {
       initBox.draggableStart = loop.progress();
-      console.log(io);
+      startX = loop.progress();
     },
     onDrag() {
+      if(!tweenLoop){
+        
+      }else{
+        tweenLoop.pause();
+      }
       loop.progress(wrap(initBox.draggableStart + (this.startX - this.x) * (1 / initBox.totalWidth())));
       initBox.draggableEnd = loop.progress();
+      
     },
     onDragEnd() {
-      console.log(initBox.draggableEnd);
+      console.log(initBox.draggableEnd, 'index');
       animaDraggable = ratio(wrap(initBox.draggableEnd));
-      console.log(io.indexOf(animaDraggable));
-      // gsap.fromTo(loop, {
-      //   progress: initBox.draggableEnd
-      // }, {
-      //   progress: animaDraggable,
-      //   ease: "back.out(1.1)",
-      //   duration: 0.4
-      // })
-      toIndex(io.indexOf(animaDraggable))
+
+      // toIndex(io.indexOf(animaDraggable), {duration: 0.4})
+      
     }, 
   })
   loop.draggable = draggable;
-
+  
   //test
-  let config= {};
-  let time = null;
-  let nowIndex = 0;
-  console.log(loop.duration());
-  console.log(times);
-  const timing = loop.duration() / box.length;
-  function toIndex(index){
-    time = times[index];
-      if(time < loop.time() && index > nowIndex && +Math.abs(time - loop.time()).toFixed(1) / +Math.abs(index-nowIndex) >= timing){
-        time = +((time + loop.duration()).toFixed(1));
-      }else if(time > loop.time()  && index < nowIndex && +Math.abs(time - loop.time()).toFixed(1) / +Math.abs(index-nowIndex) >= timing){
-        config.modifiers = {time: gsap.utils.wrap(0, loop.duration())}
-        time = +((loop.time()-(timing * +Math.abs(index-nowIndex))).toFixed(1));
-      }
-      nowIndex = index
-      config.duration = 0.7;
-      config.overwrite = true;
-      console.log(config);
-      return loop.tweenTo(time, {duration: 0.7, overwrite: false})
+  function toIndex(index, config){
+    console.log(index, config);
+    config = config || {};
+    
+    (Math.abs(index - curIndex) > length / 2) && (index += index > curIndex ? -length : length)
+    let newIndex = gsap.utils.wrap(0, length, index);
+    let time = times[newIndex];
+    if(time > loop.time() !== index > curIndex){
+      config.modifiers = {time: gsap.utils.wrap(0, loop.duration())};
+      time += loop.duration() * (index > curIndex ? 1 : -1)
+    }
+    curIndex = newIndex;
+    config.overwrite = true;
+    tweenLoop = loop.tweenTo(time, config)
+
+    console.log(tweenLoop);
+    return tweenLoop
   }
+    // time = times[index];
+    //   if(time < loop.time() && index > nowIndex && +Math.abs(time - loop.time()).toFixed(1) / +Math.abs(index-nowIndex) >= timing){
+    //     time = +((time + loop.duration()).toFixed(1));
+    //   }else if(time > loop.time()  && index < nowIndex && +Math.abs(time - loop.time()).toFixed(1) / +Math.abs(index-nowIndex) >= timing){
+    //     config.modifiers = {time: gsap.utils.wrap(0, loop.duration())}
+    //     time = +((loop.time()-(timing * +Math.abs(index-nowIndex))).toFixed(1));
+    //   }
+    //   nowIndex = index
+    //   config.duration = 0.7;
+    //   config.modifiers = {overwrite : true};
+    //   console.log(config);
+    //   tweenLoop = loop.tweenTo(time, config)
+    //   return tweenLoop
+  
   box.forEach((item, index) => {
     item.addEventListener('click', () => {
       toIndex(index)
     })
   })
+  document.querySelector("#next").addEventListener("click", ()=>{
+    toIndex(curIndex+1, {duration: 0.4})
 
+  })
+  document.querySelector("#prev").addEventListener("click", ()=>{
+    toIndex(curIndex-1, {duration: 0.4})
+  })
 
 
 
@@ -161,7 +184,7 @@ onMounted(() => {
 
 <template>
   <div id="main">
-
+    <div id="u"></div>
     <div id="flow">
       <span id="flow_top">视频中心</span>
       <span id="flow_center">VIDEO CENTER</span>
@@ -170,15 +193,15 @@ onMounted(() => {
 
     <div id="layout_box">
       <div class="swiper_box" :key="item" v-for="item in block">
-        <div style="border: 1px solid red;font-size: 50px;">
+        <div style="color: white; font-size: 80px;">
           {{ item }}
         </div>
 
       </div>
       <div>
-        <!--         
+                
         <div id="prev">左</div>
-        <div id="next">右</div> -->
+        <div id="next">右</div>
       </div>
 
       <div class="drag-proxy"></div>
@@ -186,7 +209,14 @@ onMounted(() => {
   </div>
 </template>
 <style lang="scss" scoped>
+#u{
+  height: 100%;
+  width: 20%;
+  position: fixed;
+  border: 10px solid red;
+}
 #main {
+
   width: 100vw;
   height: calc(100vh - 5rem);
   display: flex;
@@ -226,7 +256,8 @@ onMounted(() => {
 
     .swiper_box {
       height: 720px;
-      width: 1280px;
+      width: 580px;
+      
       background-color: black;
       display: flex;
       justify-content: center;
