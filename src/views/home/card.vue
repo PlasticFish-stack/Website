@@ -114,34 +114,66 @@ onMounted(() => {
       
     },
     onDragEnd() {
-      console.log(initBox.draggableEnd, 'index');
+      
       animaDraggable = ratio(wrap(initBox.draggableEnd));
-
-      // toIndex(io.indexOf(animaDraggable), {duration: 0.4})
+      console.log(animaDraggable, io.indexOf(animaDraggable), nowIndex, 'index');
+      toIndex(io.indexOf(animaDraggable), {duration: 0.4})
       
     }, 
   })
   loop.draggable = draggable;
+  console.log("loop总时间为:" + loop.duration());
   
+  let is = [];
+  times.map((item, index) => {
+    is[index] = [item]
+  })
+  const timingWrap = gsap.utils.wrap(0, loop.duration())
+  console.table(is);
   //test
+  console.log(loop);
   function toIndex(index, config){
-    console.log(index, config);
     config = config || {};
-    
-    (Math.abs(index - curIndex) > length / 2) && (index += index > curIndex ? -length : length)
-    let newIndex = gsap.utils.wrap(0, length, index);
-    let time = times[newIndex];
-    if(time > loop.time() !== index > curIndex){
-      config.modifiers = {time: gsap.utils.wrap(0, loop.duration())};
-      time += loop.duration() * (index > curIndex ? 1 : -1)
+    let timing = null;
+    let offsetIndex = box.length / 2;
+    let cur = Math.abs(index - nowIndex);
+    config.modifiers = {overwrite : true};
+    if(index > nowIndex && times[index] < times[nowIndex] && Math.abs(index - nowIndex) < offsetIndex && loop.time() >= times[nowIndex]){
+      config.modifiers = {time: gsap.utils.wrap(0, loop.duration())}
+      timing = times[nowIndex] + loop.labels["label1"] * Math.abs(nowIndex - index)
+      console.log(loop.time(),timing, times[nowIndex], Math.abs(nowIndex - index));
+      tweenLoop = loop.tweenTo(timing, config)
+    }else if(index < nowIndex && times[index] > times[nowIndex] && index - nowIndex <= 1 && Math.abs(index - nowIndex) < offsetIndex && loop.time() <= times[nowIndex]){
+      config.modifiers = {time: gsap.utils.wrap(0, loop.duration())}
+      timing = times[nowIndex] - loop.labels["label1"] * Math.abs(nowIndex - index)
+      console.log(loop.time(),timing, times[nowIndex], Math.abs(nowIndex - index));
+      tweenLoop = loop.tweenTo(timing, config)
+    }else{
+      tweenLoop = loop.tweenTo(times[index], config)
     }
-    curIndex = newIndex;
-    config.overwrite = true;
-    tweenLoop = loop.tweenTo(time, config)
-
-    console.log(tweenLoop);
-    return tweenLoop
+    nowIndex = index
   }
+    // if(!tweenLoop){
+        
+    //   }else{
+    //     tweenLoop.pause();
+    //   }
+    // config = config || {};
+    
+    // (Math.abs(index - curIndex) > length / 2) && (index += index > curIndex ? -length : length)
+    // let newIndex = gsap.utils.wrap(0, length, index);
+    // let time = times[newIndex];
+    // if(time > loop.time() !== index > curIndex){
+    //   config.modifiers = {time: gsap.utils.wrap(0, loop.duration())};
+    //   time += loop.duration() * (index > curIndex ? 1 : -1)
+    // }
+    // curIndex = newIndex;
+    // config.overwrite = true;
+    // tweenLoop = loop.tweenTo(time, config)
+
+    // console.log(tweenLoop);
+    // return tweenLoop
+  
     // time = times[index];
     //   if(time < loop.time() && index > nowIndex && +Math.abs(time - loop.time()).toFixed(1) / +Math.abs(index-nowIndex) >= timing){
     //     time = +((time + loop.duration()).toFixed(1));
@@ -158,7 +190,7 @@ onMounted(() => {
   
   box.forEach((item, index) => {
     item.addEventListener('click', () => {
-      toIndex(index)
+      toIndex(index, {duration: 0.4})
     })
   })
   document.querySelector("#next").addEventListener("click", ()=>{
@@ -256,7 +288,7 @@ onMounted(() => {
 
     .swiper_box {
       height: 720px;
-      width: 580px;
+      width: 1280px;
       
       background-color: black;
       display: flex;
