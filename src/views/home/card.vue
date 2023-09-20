@@ -2,7 +2,7 @@
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Draggable } from 'gsap/Draggable';
-import { computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 gsap.registerPlugin(ScrollTrigger, Draggable);
 
 
@@ -10,7 +10,17 @@ const block = new Array(7);
 for (let i = 0; i < block.length; i++) {
   block[i] = 'display' + i
 }//块显示内容
-
+const throttle = (fn, time) => {
+  let timer = null;
+  return function(){
+    if(!timer){
+      timer = setTimeout(function(){
+        fn()
+        timer = null
+      }, time)
+    }
+  }
+}
 onMounted(() => {
   const box = gsap.utils.toArray('.swiper_box');
   const margin = 30
@@ -132,11 +142,26 @@ onMounted(() => {
   console.table(is);
   //test
   console.log(loop);
-  function toIndex(index, config){
+  let fnBool = ref(true);
+  const waiting = new Promise((res) => {
+    return res
+  })
+  async function toIndex(index, config){
+    
+    if(fnBool.value != true){
+      await 
+    }
+    if(config.duration){
+      fnBool.value = false
+      console.log(config.duration);
+      setTimeout(() => {fnBool.value = true, waiting()}, config.duration * 1000)
+    }
     config = config || {};
     let timing = null;
     let offsetIndex = box.length / 2;
+    index = gsap.utils.wrap(0, box.length, index);
     config.modifiers = {overwrite : true};
+    
     if(index > nowIndex && times[index] < times[nowIndex] && Math.abs(index - nowIndex) < offsetIndex && loop.time() >= times[nowIndex]){
       config.modifiers = {time: gsap.utils.wrap(0, loop.duration())}
       timing = times[nowIndex] + loop.labels["label1"] * Math.abs(nowIndex - index)
@@ -150,6 +175,7 @@ onMounted(() => {
     }
     nowIndex = index
   }
+  console.log(nowIndex);
     // if(!tweenLoop){
         
     //   }else{
@@ -191,11 +217,12 @@ onMounted(() => {
     })
   })
   document.querySelector("#next").addEventListener("click", ()=>{
-    toIndex(nowIndex+1, {duration: 0.4})
+    
+    throttle(toIndex(nowIndex+1, {duration: 0.4}), 2000)
 
   })
   document.querySelector("#prev").addEventListener("click", ()=>{
-    toIndex(nowIndex-1, {duration: 0.4})
+    throttle(toIndex(nowIndex-1, {duration: 0.4}), 2000)
   })
 
 
@@ -285,7 +312,7 @@ onMounted(() => {
 
     .swiper_box {
       height: 720px;
-      width: 1280px;
+      width: 380px;
       
       background-color: black;
       display: flex;
