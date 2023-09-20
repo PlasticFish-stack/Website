@@ -136,17 +136,14 @@ onMounted(() => {
     config = config || {};
     let timing = null;
     let offsetIndex = box.length / 2;
-    let cur = Math.abs(index - nowIndex);
     config.modifiers = {overwrite : true};
     if(index > nowIndex && times[index] < times[nowIndex] && Math.abs(index - nowIndex) < offsetIndex && loop.time() >= times[nowIndex]){
       config.modifiers = {time: gsap.utils.wrap(0, loop.duration())}
       timing = times[nowIndex] + loop.labels["label1"] * Math.abs(nowIndex - index)
-      console.log(loop.time(),timing, times[nowIndex], Math.abs(nowIndex - index));
       tweenLoop = loop.tweenTo(timing, config)
     }else if(index < nowIndex && times[index] > times[nowIndex] && index - nowIndex <= 1 && Math.abs(index - nowIndex) < offsetIndex && loop.time() <= times[nowIndex]){
       config.modifiers = {time: gsap.utils.wrap(0, loop.duration())}
       timing = times[nowIndex] - loop.labels["label1"] * Math.abs(nowIndex - index)
-      console.log(loop.time(),timing, times[nowIndex], Math.abs(nowIndex - index));
       tweenLoop = loop.tweenTo(timing, config)
     }else{
       tweenLoop = loop.tweenTo(times[index], config)
@@ -194,11 +191,11 @@ onMounted(() => {
     })
   })
   document.querySelector("#next").addEventListener("click", ()=>{
-    toIndex(curIndex+1, {duration: 0.4})
+    toIndex(nowIndex+1, {duration: 0.4})
 
   })
   document.querySelector("#prev").addEventListener("click", ()=>{
-    toIndex(curIndex-1, {duration: 0.4})
+    toIndex(nowIndex-1, {duration: 0.4})
   })
 
 
