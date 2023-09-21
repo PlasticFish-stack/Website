@@ -143,19 +143,21 @@ onMounted(() => {
   //test
   console.log(loop);
   let fnBool = ref(true);
-  const waiting = new Promise((res) => {
-    return res
-  })
+  let promiseWaiting = null;
   async function toIndex(index, config){
     
     if(fnBool.value != true){
-      await 
+
+      await promiseWaiting
+      console.log(promiseWaiting, 'waiting');
+      
     }
     if(config.duration){
       fnBool.value = false
       console.log(config.duration);
-      setTimeout(() => {fnBool.value = true, waiting()}, config.duration * 1000)
+      setTimeout(() => {fnBool.value = true, promiseWaiting = new Promise((res) => res)}, config.duration * 1000)
     }
+    console.log(promiseWaiting, 'res');
     config = config || {};
     let timing = null;
     let offsetIndex = box.length / 2;
@@ -174,6 +176,7 @@ onMounted(() => {
       tweenLoop = loop.tweenTo(times[index], config)
     }
     nowIndex = index
+    promiseWaiting = null;
   }
   console.log(nowIndex);
     // if(!tweenLoop){
@@ -218,7 +221,8 @@ onMounted(() => {
   })
   document.querySelector("#next").addEventListener("click", ()=>{
     
-    throttle(toIndex(nowIndex+1, {duration: 0.4}), 2000)
+    console.log(promiseWaiting);
+    // throttle(toIndex(nowIndex+1, {duration: 0.4}), 2000)
 
   })
   document.querySelector("#prev").addEventListener("click", ()=>{
