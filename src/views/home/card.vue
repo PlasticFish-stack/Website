@@ -136,6 +136,7 @@ onMounted(() => {
   times.map((item, index) => {
     is[index] = [item]
   })
+<<<<<<< HEAD
   const timingWrap = gsap.utils.wrap(0, loop.duration());
 
   let toIndexBool = true;
@@ -146,6 +147,28 @@ onMounted(() => {
     setTimeout(() => {
       toIndexBool = true
     }, 600)
+=======
+  const timingWrap = gsap.utils.wrap(0, loop.duration())
+  console.table(is);
+  //test
+  console.log(loop);
+  let fnBool = ref(true);
+  let promiseWaiting = null;
+  async function toIndex(index, config){
+    
+    if(fnBool.value != true){
+
+      await promiseWaiting
+      console.log(promiseWaiting, 'waiting');
+      
+    }
+    if(config.duration){
+      fnBool.value = false
+      console.log(config.duration);
+      setTimeout(() => {fnBool.value = true, promiseWaiting = new Promise((res) => res)}, config.duration * 1000)
+    }
+    console.log(promiseWaiting, 'res');
+>>>>>>> 10d499065d66aa36ba12d27cfd76ea1a78b9ac2b
     config = config || {};
     let timing = null;
     let offsetIndex = box.length / 2;
@@ -164,7 +187,11 @@ onMounted(() => {
       tweenLoop = loop.tweenTo(times[index], config)
     }
     nowIndex = index
+<<<<<<< HEAD
     toIndexBool = false
+=======
+    promiseWaiting = null;
+>>>>>>> 10d499065d66aa36ba12d27cfd76ea1a78b9ac2b
   }
   console.log(nowIndex);
     // if(!tweenLoop){
@@ -210,7 +237,8 @@ onMounted(() => {
   })
   document.querySelector("#next").addEventListener("click", ()=>{
     
-    throttle(toIndex(nowIndex+1, {duration: 0.4}), 2000)
+    console.log(promiseWaiting);
+    // throttle(toIndex(nowIndex+1, {duration: 0.4}), 2000)
 
   })
   document.querySelector("#prev").addEventListener("click", ()=>{
