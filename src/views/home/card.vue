@@ -114,9 +114,7 @@ onMounted(() => {
       startX = loop.progress();
     },
     onDrag() {
-      if(!tweenLoop){
-        
-      }else{
+      if(tweenLoop){
         tweenLoop.pause();
       }
       loop.progress(wrap(initBox.draggableStart + (this.startX - this.x) * (1 / initBox.totalWidth())));
@@ -124,7 +122,7 @@ onMounted(() => {
       
     },
     onDragEnd() {
-      
+      toIndexBool = true;
       animaDraggable = ratio(wrap(initBox.draggableEnd));
       console.log(animaDraggable, io.indexOf(animaDraggable), nowIndex, 'index');
       toIndex(io.indexOf(animaDraggable), {duration: 0.4})
@@ -138,24 +136,16 @@ onMounted(() => {
   times.map((item, index) => {
     is[index] = [item]
   })
-  const timingWrap = gsap.utils.wrap(0, loop.duration())
-  console.table(is);
-  //test
-  console.log(loop);
-  let fnBool = ref(true);
-  const waiting = new Promise((res) => {
-    return res
-  })
-  async function toIndex(index, config){
-    
-    if(fnBool.value != true){
-      await 
+  const timingWrap = gsap.utils.wrap(0, loop.duration());
+
+  let toIndexBool = true;
+  function toIndex(index, config){
+    if(toIndexBool === false){
+      return
     }
-    if(config.duration){
-      fnBool.value = false
-      console.log(config.duration);
-      setTimeout(() => {fnBool.value = true, waiting()}, config.duration * 1000)
-    }
+    setTimeout(() => {
+      toIndexBool = true
+    }, 600)
     config = config || {};
     let timing = null;
     let offsetIndex = box.length / 2;
@@ -174,6 +164,7 @@ onMounted(() => {
       tweenLoop = loop.tweenTo(times[index], config)
     }
     nowIndex = index
+    toIndexBool = false
   }
   console.log(nowIndex);
     // if(!tweenLoop){
@@ -214,6 +205,7 @@ onMounted(() => {
   box.forEach((item, index) => {
     item.addEventListener('click', () => {
       toIndex(index, {duration: 0.4})
+      console.log("点击的是"  + index + "NowIndex值为:"+nowIndex);
     })
   })
   document.querySelector("#next").addEventListener("click", ()=>{
