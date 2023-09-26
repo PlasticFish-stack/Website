@@ -2,8 +2,9 @@
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Draggable } from 'gsap/Draggable';
+import { TextPlugin } from 'gsap/all';
 import { ref, computed, onMounted, watch } from 'vue';
-gsap.registerPlugin(ScrollTrigger, Draggable);
+gsap.registerPlugin(ScrollTrigger, Draggable, TextPlugin);
 
 
 const block = new Array(7);
@@ -12,9 +13,9 @@ for (let i = 0; i < block.length; i++) {
 }//块显示内容
 const throttle = (fn, time) => {
   let timer = null;
-  return function(){
-    if(!timer){
-      timer = setTimeout(function(){
+  return function () {
+    if (!timer) {
+      timer = setTimeout(function () {
         fn()
         timer = null
       }, time)
@@ -25,10 +26,104 @@ onMounted(() => {
   const box = gsap.utils.toArray('.swiper_box');
   const margin = 30
   const color = ['#00828b', '#276893', '#37344c', '#004db5', '#e67a2a', '#afc8ba', '#b65b46', '#c6574b', '#a22076', '#423171', '#c3a6cb'];
+  const imgs = ['url(src/assets/Background/1.jpg)',
+                'url(src/assets/Background/2.jpg)',
+                'url(src/assets/Background/3.jpg)',
+                'url(src/assets/Background/4.jpg)',
+                'url(src/assets/Background/5.jpg)',
+                'url(src/assets/Background/6.jpg)',
+                'url(src/assets/Background/7.jpg)'];
+  const msg = [
+    {
+      title: '拍摄设备',
+      content: '明月几时有 把酒问青天',
+      alink0: {
+        src: 'www.baidu.com',
+        title: '了解更多'
+      },
+      alink1: {
+        src: 'www.baidu.com',
+        title: '立即购买'
+      }
+    },
+    {
+      title: '拍摄设备',
+      content: '山重水复疑无路 柳暗花明又一村',
+      alink0: {
+        src: 'www.baidu.com',
+        title: '立即购买'
+      },
+      alink1: {
+        src: 'www.baidu.com',
+        title: '了解更多'
+      }
+    },
+    {
+      title: '拍摄设备',
+      content: '人生如梦 一尊还酹江月',
+      alink0: {
+        src: 'www.baidu.com',
+        title: '了解更多'
+      },
+      alink1: {
+        src: 'www.baidu.com',
+        title: '立即购买'
+      }
+    },
+    {
+      title: '拍sdadsa摄设备',
+      content: '斜阳照墟落 穷巷牛羊归',
+      alink0: {
+        src: 'www.baidu.com',
+        title: '立即购买'
+      },
+      alink1: {
+        src: 'www.baidu.com',
+        title: '了解更多'
+      }
+    },
+    {
+      title: '拍摄wqewqe设备',
+      content: '红豆生南国 春来发几枝',
+      alink0: {
+        src: 'www.baidu.com',
+        title: '了解更多'
+      },
+      alink1: {
+        src: 'www.baidu.com',
+        title: '立即购买'
+      }
+    },
+    {
+      title: '拍asdasdaf摄设备',
+      content: '青山遮不住 毕竟东流去',
+      alink0: {
+        src: 'www.baidu.com',
+        title: '立即购买'
+      },
+      alink1: {
+        src: 'www.baidu.com',
+        title: '了解更多'
+      }
+    },
+    {
+      title: '拍摄设备',
+      content: '海上生明月 天涯共此时',
+      alink0: {
+        src: 'www.baidu.com',
+        title: '了解更多'
+      },
+      alink1: {
+        src: 'www.baidu.com',
+        title: '立即购买'
+      }
+    }
+  ]
   gsap.set(box, {
     marginRight: margin,
-    backgroundColor: gsap.utils.wrap(color)
+    backgroundImage: gsap.utils.wrap(imgs)
   })
+  
   let length = box.length;
   const loop = gsap.timeline({
     repeat: -1,
@@ -109,140 +204,162 @@ onMounted(() => {
   const draggable = Draggable.create('.drag-proxy', {
     trigger: '#layout_box',
     type: "x",
+    minimumMovement: 20,
     onPressInit() {
       initBox.draggableStart = loop.progress();
       startX = loop.progress();
     },
     onDrag() {
-      if(tweenLoop){
+      if (tweenLoop) {
         tweenLoop.pause();
       }
       loop.progress(wrap(initBox.draggableStart + (this.startX - this.x) * (1 / initBox.totalWidth())));
       initBox.draggableEnd = loop.progress();
-      
+
     },
     onDragEnd() {
       toIndexBool = true;
       animaDraggable = ratio(wrap(initBox.draggableEnd));
       console.log(animaDraggable, io.indexOf(animaDraggable), nowIndex, 'index');
-      toIndex(io.indexOf(animaDraggable), {duration: 0.4})
-      
-    }, 
+      toIndex(io.indexOf(animaDraggable), { duration: 0.4 })
+
+    },
   })
   loop.draggable = draggable;
   console.log("loop总时间为:" + loop.duration());
-  
   let is = [];
   times.map((item, index) => {
     is[index] = [item]
   })
-<<<<<<< HEAD
   const timingWrap = gsap.utils.wrap(0, loop.duration());
 
   let toIndexBool = true;
-  function toIndex(index, config){
-    if(toIndexBool === false){
+  function toIndex(index, config) {
+    if (toIndexBool === false) {
       return
     }
     setTimeout(() => {
       toIndexBool = true
-    }, 600)
-=======
-  const timingWrap = gsap.utils.wrap(0, loop.duration())
-  console.table(is);
-  //test
-  console.log(loop);
-  let fnBool = ref(true);
-  let promiseWaiting = null;
-  async function toIndex(index, config){
-    
-    if(fnBool.value != true){
 
-      await promiseWaiting
-      console.log(promiseWaiting, 'waiting');
-      
-    }
-    if(config.duration){
-      fnBool.value = false
-      console.log(config.duration);
-      setTimeout(() => {fnBool.value = true, promiseWaiting = new Promise((res) => res)}, config.duration * 1000)
-    }
-    console.log(promiseWaiting, 'res');
->>>>>>> 10d499065d66aa36ba12d27cfd76ea1a78b9ac2b
+    }, 1000)
     config = config || {};
     let timing = null;
     let offsetIndex = box.length / 2;
     index = gsap.utils.wrap(0, box.length, index);
-    config.modifiers = {overwrite : true};
-    
-    if(index > nowIndex && times[index] < times[nowIndex] && Math.abs(index - nowIndex) < offsetIndex && loop.time() >= times[nowIndex]){
-      config.modifiers = {time: gsap.utils.wrap(0, loop.duration())}
+    config.modifiers = { overwrite: true };
+    config.ease = "power3.out"
+    if (index > nowIndex && times[index] < times[nowIndex] && Math.abs(index - nowIndex) < offsetIndex && loop.time() >= times[nowIndex]) {
+      config.modifiers = { time: gsap.utils.wrap(0, loop.duration()) }
       timing = times[nowIndex] + loop.labels["label1"] * Math.abs(nowIndex - index)
       tweenLoop = loop.tweenTo(timing, config)
-    }else if(index < nowIndex && times[index] > times[nowIndex] && index - nowIndex <= 1 && Math.abs(index - nowIndex) < offsetIndex && loop.time() <= times[nowIndex]){
-      config.modifiers = {time: gsap.utils.wrap(0, loop.duration())}
+    } else if (index < nowIndex && times[index] > times[nowIndex] && index - nowIndex <= 1 && Math.abs(index - nowIndex) < offsetIndex && loop.time() <= times[nowIndex]) {
+      config.modifiers = { time: gsap.utils.wrap(0, loop.duration()) }
       timing = times[nowIndex] - loop.labels["label1"] * Math.abs(nowIndex - index)
       tweenLoop = loop.tweenTo(timing, config)
-    }else{
+    } else {
       tweenLoop = loop.tweenTo(times[index], config)
     }
     nowIndex = index
-<<<<<<< HEAD
     toIndexBool = false
-=======
-    promiseWaiting = null;
->>>>>>> 10d499065d66aa36ba12d27cfd76ea1a78b9ac2b
+    gsap.timeline().to("#titleSpan", {
+      opacity: 0,
+      y: -50,
+    }).to("#titleSpan", {
+      y: 10,
+      text: msg[nowIndex].content,
+      duration: 0
+    }).to("#titleSpan", {
+      opacity: 1,
+      y: 0,
+      duration: 0.2
+    })
+
+
+
+    gsap.timeline().to(".alink", {
+      opacity: 0,
+      y: -30,
+      duration: 0.6
+    }).to(".alink", {
+      y: 20,
+      text: msg[nowIndex].alink0.title,
+      duration: 0
+    }).to(".alink", {
+      opacity: 1,
+      y: 0,
+      duration: 0.6
+    })
+
+
+
+    gsap.timeline().to(".abuy", {
+      opacity: 0,
+      y: -30,
+      duration: 0.6
+    }).to(".abuy", {
+      y: 20,
+      text: msg[nowIndex].alink1.title,
+      duration: 0
+    }).to(".abuy", {
+      opacity: 1,
+      y: 0,
+      ease: '"power4.out"',
+      duration: 0.6
+    })
   }
   console.log(nowIndex);
-    // if(!tweenLoop){
-        
-    //   }else{
-    //     tweenLoop.pause();
-    //   }
-    // config = config || {};
-    
-    // (Math.abs(index - curIndex) > length / 2) && (index += index > curIndex ? -length : length)
-    // let newIndex = gsap.utils.wrap(0, length, index);
-    // let time = times[newIndex];
-    // if(time > loop.time() !== index > curIndex){
-    //   config.modifiers = {time: gsap.utils.wrap(0, loop.duration())};
-    //   time += loop.duration() * (index > curIndex ? 1 : -1)
-    // }
-    // curIndex = newIndex;
-    // config.overwrite = true;
-    // tweenLoop = loop.tweenTo(time, config)
+  gsap.set("#titleSpan", {
+    text: msg[nowIndex].content,
+  })
+  // if(!tweenLoop){
 
-    // console.log(tweenLoop);
-    // return tweenLoop
-  
-    // time = times[index];
-    //   if(time < loop.time() && index > nowIndex && +Math.abs(time - loop.time()).toFixed(1) / +Math.abs(index-nowIndex) >= timing){
-    //     time = +((time + loop.duration()).toFixed(1));
-    //   }else if(time > loop.time()  && index < nowIndex && +Math.abs(time - loop.time()).toFixed(1) / +Math.abs(index-nowIndex) >= timing){
-    //     config.modifiers = {time: gsap.utils.wrap(0, loop.duration())}
-    //     time = +((loop.time()-(timing * +Math.abs(index-nowIndex))).toFixed(1));
-    //   }
-    //   nowIndex = index
-    //   config.duration = 0.7;
-    //   config.modifiers = {overwrite : true};
-    //   console.log(config);
-    //   tweenLoop = loop.tweenTo(time, config)
-    //   return tweenLoop
-  
+  //   }else{
+  //     tweenLoop.pause();
+  //   }
+  // config = config || {};
+
+  // (Math.abs(index - curIndex) > length / 2) && (index += index > curIndex ? -length : length)
+  // let newIndex = gsap.utils.wrap(0, length, index);
+  // let time = times[newIndex];
+  // if(time > loop.time() !== index > curIndex){
+  //   config.modifiers = {time: gsap.utils.wrap(0, loop.duration())};
+  //   time += loop.duration() * (index > curIndex ? 1 : -1)
+  // }
+  // curIndex = newIndex;
+  // config.overwrite = true;
+  // tweenLoop = loop.tweenTo(time, config)
+
+  // console.log(tweenLoop);
+  // return tweenLoop
+
+  // time = times[index];
+  //   if(time < loop.time() && index > nowIndex && +Math.abs(time - loop.time()).toFixed(1) / +Math.abs(index-nowIndex) >= timing){
+  //     time = +((time + loop.duration()).toFixed(1));
+  //   }else if(time > loop.time()  && index < nowIndex && +Math.abs(time - loop.time()).toFixed(1) / +Math.abs(index-nowIndex) >= timing){
+  //     config.modifiers = {time: gsap.utils.wrap(0, loop.duration())}
+  //     time = +((loop.time()-(timing * +Math.abs(index-nowIndex))).toFixed(1));
+  //   }
+  //   nowIndex = index
+  //   config.duration = 0.7;
+  //   config.modifiers = {overwrite : true};
+  //   console.log(config);
+  //   tweenLoop = loop.tweenTo(time, config)
+  //   return tweenLoop
+
   box.forEach((item, index) => {
     item.addEventListener('click', () => {
-      toIndex(index, {duration: 0.4})
-      console.log("点击的是"  + index + "NowIndex值为:"+nowIndex);
+      toIndex(index, { duration: 1 })
+      console.log("点击的是" + index + "NowIndex值为:" + nowIndex);
     })
   })
-  document.querySelector("#next").addEventListener("click", ()=>{
-    
+  document.querySelector("#next").addEventListener("click", () => {
+
     console.log(promiseWaiting);
     // throttle(toIndex(nowIndex+1, {duration: 0.4}), 2000)
 
   })
-  document.querySelector("#prev").addEventListener("click", ()=>{
-    throttle(toIndex(nowIndex-1, {duration: 0.4}), 2000)
+  document.querySelector("#prev").addEventListener("click", () => {
+    throttle(toIndex(nowIndex - 1, { duration: 0.4 }), 2000)
   })
 
 
@@ -260,7 +377,7 @@ onMounted(() => {
 
 <template>
   <div id="main">
-    <div id="u"></div>
+    <!-- <div id="u"></div> -->
     <div id="flow">
       <span id="flow_top">视频中心</span>
       <span id="flow_center">VIDEO CENTER</span>
@@ -268,6 +385,14 @@ onMounted(() => {
 
 
     <div id="layout_box">
+      <div id="msg">
+        <span>拍摄设备</span>
+        <span id="titleSpan"></span>
+        <div>
+          <a href="" class="alink">了解更多</a>
+          <a href="" class="abuy">立即购买</a>
+        </div>
+      </div>
       <div class="swiper_box" :key="item" v-for="item in block">
         <div style="color: white; font-size: 80px;">
           {{ item }}
@@ -275,7 +400,7 @@ onMounted(() => {
 
       </div>
       <div>
-                
+
         <div id="prev">左</div>
         <div id="next">右</div>
       </div>
@@ -285,12 +410,36 @@ onMounted(() => {
   </div>
 </template>
 <style lang="scss" scoped>
-#u{
-  height: 100%;
-  width: 20%;
-  position: fixed;
+#msg {
+  color: black;
+  margin-top: 50px;
+  height: 30%;
+  width: 50%;
+  position: absolute;
   border: 10px solid red;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  span{
+    font-size: 48px;
+    margin-bottom: 10px;
+  }
+  div{
+    margin-top: 15px;
+    display: flex;
+  }
+  a{
+    color: black;
+    margin-left: 5px;
+    margin-right: 5px;
+    display: block;
+  }
+  a::after{
+    content: '1';
+  }
 }
+
 #main {
 
   width: 100vw;
@@ -332,13 +481,13 @@ onMounted(() => {
 
     .swiper_box {
       height: 720px;
-      width: 380px;
-      
+      width: 1200px;
       background-color: black;
       display: flex;
       justify-content: center;
       align-items: center;
       flex-shrink: 0;
+      background-image: url(@/assets/Background/1.jpg);
     }
 
     #prev {
