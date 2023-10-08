@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Draggable } from 'gsap/Draggable';
 import { TextPlugin } from 'gsap/all';
 import { ref, computed, onMounted, watch } from 'vue';
+import * as math from 'mathjs'
 gsap.registerPlugin(ScrollTrigger, Draggable, TextPlugin);
 
 
@@ -166,7 +167,7 @@ onMounted(() => {
     times[index] = start / speed;
     num[index] = index + 1
   })
-  loop.progress(1, true).progress(0, true);
+  
   // let ratio = gsap.utils.snap((1 / box.length ));;
 
   const rtaio_i = (1 / initBox.totalWidth()) * 30
@@ -210,57 +211,134 @@ onMounted(() => {
       startX = loop.progress();
     },
     onDrag() {
-      if (tweenLoop) {
-        tweenLoop.pause();
-      }
+      // if (tweenLoop) {
+      //   tweenLoop.pause();
+      // }
       loop.progress(wrap(initBox.draggableStart + (this.startX - this.x) * (1 / initBox.totalWidth())));
       initBox.draggableEnd = loop.progress();
 
     },
     onDragEnd() {
-      toIndexBool = true;
-      animaDraggable = ratio(wrap(initBox.draggableEnd));
-      console.log(animaDraggable, io.indexOf(animaDraggable), nowIndex, 'index');
-      toIndex(io.indexOf(animaDraggable), { duration: 0.4 })
+      // toIndexBool = true;
+      // animaDraggable = ratio(wrap(initBox.draggableEnd));
+      // console.log(animaDraggable, io.indexOf(animaDraggable), nowIndex, 'index');
+      // toIndex(io.indexOf(animaDraggable), { duration: 0.4 })
 
     },
   })
   loop.draggable = draggable;
-  console.log("loop总时间为:" + loop.duration());
   let is = [];
   times.map((item, index) => {
     is[index] = [item]
   })
   const timingWrap = gsap.utils.wrap(0, loop.duration());
 
-  let toIndexBool = true;
+  let bool = true;
+  console.log(io);
+  console.log(times);
+  console.log(loop.duration());
+  const map = gsap.utils.mapRange(0, loop.duration(), 0, 1);//map方法
+  console.log(map(times[nowIndex]));
+  loop.progress(1, true).progress(io[0], true);
   function toIndex(index, config) {
-    if (toIndexBool === false) {
+    if(!bool){
       return
+    }else{
+      bool = false
     }
-    setTimeout(() => {
-      toIndexBool = true
-
-    }, 1000)
+    setTimeout(() => bool = true, 1000)
     config = config || {};
-    let timing = null;
-    let offsetIndex = box.length / 2;
-    index = gsap.utils.wrap(0, box.length, index);
-    config.modifiers = { overwrite: true };
-    config.ease = "power3.out"
-    if (index > nowIndex && times[index] < times[nowIndex] && Math.abs(index - nowIndex) < offsetIndex && loop.time() >= times[nowIndex]) {
-      config.modifiers = { time: gsap.utils.wrap(0, loop.duration()) }
-      timing = times[nowIndex] + loop.labels["label1"] * Math.abs(nowIndex - index)
-      tweenLoop = loop.tweenTo(timing, config)
-    } else if (index < nowIndex && times[index] > times[nowIndex] && index - nowIndex <= 1 && Math.abs(index - nowIndex) < offsetIndex && loop.time() <= times[nowIndex]) {
-      config.modifiers = { time: gsap.utils.wrap(0, loop.duration()) }
-      timing = times[nowIndex] - loop.labels["label1"] * Math.abs(nowIndex - index)
-      tweenLoop = loop.tweenTo(timing, config)
-    } else {
-      tweenLoop = loop.tweenTo(times[index], config)
+    config.duration = config.duration || 1;
+    config.ease = config.ease || "power3.out"
+    let result = math.number(math.subtract(math.bignumber(times[index]), math.bignumber(times[nowIndex])));
+    let divide = math.number(math.divide(math.bignumber(loop.duration()), math.bignumber(2)))
+    console.log(result,divide);
+    let nowIndexNum = math.bignumber(times[nowIndex]);
+    let loopDurationNum = math.bignumber(loop.duration());
+    let targetIndexNum = math.bignumber(times[index]);
+    let finalResult = math.number(math.subtract(math.add(nowIndexNum, loopDurationNum), targetIndexNum));
+    console.log("当前的时间轴值是" + times[nowIndex],  "索引值是" +nowIndex, "目标时间轴值是"+times[index], "目标索引是" + index);
+    switch(true){
+      case (result > divide):
+        config.modifiers = { time: gsap.utils.wrap(0, loop.duration()) };
+        loop.tweenTo((times[nowIndex] - finalResult).toFixed(2), config);
+        break;
+      case (result < -divide):
+        config.modifiers = { time: gsap.utils.wrap(0, loop.duration()) };
+        loop.tweenTo(times[nowIndex] +  (loop.duration()-times[nowIndex]) + times[index], config)
+        console.log('hhhhh',times[nowIndex] +  (loop.duration()-times[nowIndex]) + times[index]);
+        break;
+      default:
+        loop.tweenTo(times[index], config);
+        break;
     }
     nowIndex = index
-    toIndexBool = false
+    // if(times[index] - times[nowIndex] > loop.duration()/2){
+    //   config.modifiers = { time: gsap.utils.wrap(0, loop.duration()) }
+    //   config.duration = 1;
+    //   console.log("大大大", times[index] - times[nowIndex]);
+    //   let nowIndexNum = math.bignumber(times[nowIndex]);
+    //   let loopDurationNum = math.bignumber(loop.duration());
+    //   let targetIndexNum = math.bignumber(times[index]);
+    //   let result = math.number(math.subtract(math.add(nowIndexNum, loopDurationNum), targetIndexNum))
+      
+    //   loop.tweenTo((times[nowIndex]-result).toFixed(2), config)
+    //   console.log(times[nowIndex] , result, (times[nowIndex]-result).toFixed(2));
+    //   nowIndex = index
+ 
+    // }else{
+    //   gsap.to(loop, {
+    //   progress: map(times[index]),
+    //   duration: 0.1
+    //   })
+    //   nowIndex = index
+    // }
+    // if(times[index] - times[nowIndex]  < -(loop.duration()/2)){
+    //   console.log("小小小", times[index] - times[nowIndex]);
+    // }
+    
+    // if (toIndexBool === false) {
+    //   return
+    // }
+    // setTimeout(() => {
+    //   toIndexBool = true
+
+    // }, 1000)
+    // config = config || {};
+    // let timing = null;
+    // let offsetIndex = box.length / 2;
+    // index = gsap.utils.wrap(0, box.length, index);
+    // config.modifiers = { overwrite: true };
+    // config.ease = "power3.out"
+    // if (index > nowIndex && times[index] < times[nowIndex] && Math.abs(index - nowIndex) < offsetIndex && loop.time() >= times[nowIndex]) {
+    //   config.modifiers = { time: gsap.utils.wrap(0, loop.duration()) }
+    //   timing = times[nowIndex] + loop.labels["label1"] * Math.abs(nowIndex - index)
+    //   tweenLoop = loop.tweenTo(timing, config)
+    // } else if (index < nowIndex && times[index] > times[nowIndex] && index - nowIndex <= 1 && Math.abs(index - nowIndex) < offsetIndex && loop.time() <= times[nowIndex]) {
+    //   config.modifiers = { time: gsap.utils.wrap(0, loop.duration()) }
+    //   timing = times[nowIndex] - loop.labels["label1"] * Math.abs(nowIndex - index)
+    //   tweenLoop = loop.tweenTo(timing, config)
+    // } else {
+    //   tweenLoop = loop.tweenTo(times[index], config)
+    // }
+    // nowIndex = index
+    // toIndexBool = false
+    
+  }
+  // gsap.set("#titleSpan", {
+  //   text: msg[nowIndex].content,
+  // })
+
+
+
+
+
+
+
+
+
+  
+  function textChange(){
     gsap.timeline().to("#titleSpan", {
       opacity: 0,
       y: -50,
@@ -307,10 +385,6 @@ onMounted(() => {
       duration: 0.6
     })
   }
-  console.log(nowIndex);
-  gsap.set("#titleSpan", {
-    text: msg[nowIndex].content,
-  })
   // if(!tweenLoop){
 
   //   }else{
@@ -348,8 +422,7 @@ onMounted(() => {
 
   box.forEach((item, index) => {
     item.addEventListener('click', () => {
-      toIndex(index, { duration: 1 })
-      console.log("点击的是" + index + "NowIndex值为:" + nowIndex);
+      toIndex(index)
     })
   })
   document.querySelector("#next").addEventListener("click", () => {
@@ -359,7 +432,7 @@ onMounted(() => {
 
   })
   document.querySelector("#prev").addEventListener("click", () => {
-    throttle(toIndex(nowIndex - 1, { duration: 0.4 }), 2000)
+    // throttle(toIndex(nowIndex - 1, { duration: 0.4 }), 2000)
   })
 
 
@@ -416,7 +489,7 @@ onMounted(() => {
   height: 30%;
   width: 50%;
   position: absolute;
-  border: 10px solid red;
+  // border: 10px solid red;
   z-index: 999;
   display: flex;
   flex-direction: column;
@@ -487,7 +560,7 @@ onMounted(() => {
       justify-content: center;
       align-items: center;
       flex-shrink: 0;
-      background-image: url(@/assets/Background/1.jpg);
+      // background-image: url(@/assets/Background/1.jpg);
     }
 
     #prev {
