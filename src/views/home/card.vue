@@ -4,7 +4,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Draggable } from 'gsap/Draggable';
 import { TextPlugin } from 'gsap/all';
 import { ref, computed, onMounted, watch } from 'vue';
-import * as math from 'mathjs'
+import { add, divide, multiply, subtract } from '@/mixins/math.js';
+
 gsap.registerPlugin(ScrollTrigger, Draggable, TextPlugin);
 
 
@@ -28,12 +29,12 @@ onMounted(() => {
   const margin = 30
   const color = ['#00828b', '#276893', '#37344c', '#004db5', '#e67a2a', '#afc8ba', '#b65b46', '#c6574b', '#a22076', '#423171', '#c3a6cb'];
   const imgs = ['url(src/assets/Background/1.jpg)',
-                'url(src/assets/Background/2.jpg)',
-                'url(src/assets/Background/3.jpg)',
-                'url(src/assets/Background/4.jpg)',
-                'url(src/assets/Background/5.jpg)',
-                'url(src/assets/Background/6.jpg)',
-                'url(src/assets/Background/7.jpg)'];
+    'url(src/assets/Background/2.jpg)',
+    'url(src/assets/Background/3.jpg)',
+    'url(src/assets/Background/4.jpg)',
+    'url(src/assets/Background/5.jpg)',
+    'url(src/assets/Background/6.jpg)',
+    'url(src/assets/Background/7.jpg)'];
   const msg = [
     {
       title: '拍摄设备',
@@ -124,7 +125,7 @@ onMounted(() => {
     marginRight: margin,
     backgroundImage: gsap.utils.wrap(imgs)
   })
-  
+
   let length = box.length;
   const loop = gsap.timeline({
     repeat: -1,
@@ -167,7 +168,7 @@ onMounted(() => {
     times[index] = start / speed;
     num[index] = index + 1
   })
-  
+
   // let ratio = gsap.utils.snap((1 / box.length ));;
 
   const rtaio_i = (1 / initBox.totalWidth()) * 30
@@ -231,42 +232,41 @@ onMounted(() => {
   times.map((item, index) => {
     is[index] = [item]
   })
-  const timingWrap = gsap.utils.wrap(0, loop.duration());
+  loop.progress(1, true).progress(io[0], true);
+
+
+  
+
+
+
+
+
 
   let bool = true;
-  console.log(io);
-  console.log(times);
-  console.log(loop.duration());
-  const map = gsap.utils.mapRange(0, loop.duration(), 0, 1);//map方法
-  console.log(map(times[nowIndex]));
-  loop.progress(1, true).progress(io[0], true);
   function toIndex(index, config) {
-    if(!bool){
+    if (!bool) {
       return
-    }else{
-      bool = false
+    } else {
+      bool = false;
+      setTimeout(() => bool = true, config.duration ? add(multiply(config.duration, 1000), 200): 800);
     }
-    setTimeout(() => bool = true, 1000)
     config = config || {};
-    config.duration = config.duration || 1;
+    config.duration = config.duration || 0.6;
     config.ease = config.ease || "power3.out"
-    let result = math.number(math.subtract(math.bignumber(times[index]), math.bignumber(times[nowIndex])));
-    let divide = math.number(math.divide(math.bignumber(loop.duration()), math.bignumber(2)))
-    console.log(result,divide);
-    let nowIndexNum = math.bignumber(times[nowIndex]);
-    let loopDurationNum = math.bignumber(loop.duration());
-    let targetIndexNum = math.bignumber(times[index]);
-    let finalResult = math.number(math.subtract(math.add(nowIndexNum, loopDurationNum), targetIndexNum));
-    console.log("当前的时间轴值是" + times[nowIndex],  "索引值是" +nowIndex, "目标时间轴值是"+times[index], "目标索引是" + index);
-    switch(true){
-      case (result > divide):
+
+    console.log("当前的时间轴值是" + times[nowIndex], "索引值是" + nowIndex, "目标时间轴值是" + times[index], "目标索引是" + index);
+    switch (true) {
+      case (subtract(times[index], times[nowIndex]) > divide(loop.duration(), 2)):
         config.modifiers = { time: gsap.utils.wrap(0, loop.duration()) };
-        loop.tweenTo((times[nowIndex] - finalResult).toFixed(2), config);
+        loop.tweenTo(
+          subtract(times[nowIndex] , subtract(add(nowIndexNum, loopDurationNum), times[index]))
+          ,config);
         break;
-      case (result < -divide):
+      case (subtract(times[index], times[nowIndex]) < -divide(loop.duration(), 2)):
         config.modifiers = { time: gsap.utils.wrap(0, loop.duration()) };
-        loop.tweenTo(times[nowIndex] +  (loop.duration()-times[nowIndex]) + times[index], config)
-        console.log('hhhhh',times[nowIndex] +  (loop.duration()-times[nowIndex]) + times[index]);
+        loop.tweenTo(
+          add(times[nowIndex] , add(subtract(loop.duration() , times[nowIndex]) , times[index]))
+          ,config);
         break;
       default:
         loop.tweenTo(times[index], config);
@@ -281,11 +281,11 @@ onMounted(() => {
     //   let loopDurationNum = math.bignumber(loop.duration());
     //   let targetIndexNum = math.bignumber(times[index]);
     //   let result = math.number(math.subtract(math.add(nowIndexNum, loopDurationNum), targetIndexNum))
-      
+
     //   loop.tweenTo((times[nowIndex]-result).toFixed(2), config)
     //   console.log(times[nowIndex] , result, (times[nowIndex]-result).toFixed(2));
     //   nowIndex = index
- 
+
     // }else{
     //   gsap.to(loop, {
     //   progress: map(times[index]),
@@ -296,7 +296,7 @@ onMounted(() => {
     // if(times[index] - times[nowIndex]  < -(loop.duration()/2)){
     //   console.log("小小小", times[index] - times[nowIndex]);
     // }
-    
+
     // if (toIndexBool === false) {
     //   return
     // }
@@ -323,7 +323,7 @@ onMounted(() => {
     // }
     // nowIndex = index
     // toIndexBool = false
-    
+
   }
   // gsap.set("#titleSpan", {
   //   text: msg[nowIndex].content,
@@ -337,8 +337,8 @@ onMounted(() => {
 
 
 
-  
-  function textChange(){
+
+  function textChange() {
     gsap.timeline().to("#titleSpan", {
       opacity: 0,
       y: -50,
@@ -422,7 +422,7 @@ onMounted(() => {
 
   box.forEach((item, index) => {
     item.addEventListener('click', () => {
-      toIndex(index)
+      toIndex(index, {duration: 0.6})
     })
   })
   document.querySelector("#next").addEventListener("click", () => {
@@ -494,21 +494,25 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  span{
+
+  span {
     font-size: 48px;
     margin-bottom: 10px;
   }
-  div{
+
+  div {
     margin-top: 15px;
     display: flex;
   }
-  a{
+
+  a {
     color: black;
     margin-left: 5px;
     margin-right: 5px;
     display: block;
   }
-  a::after{
+
+  a::after {
     content: '1';
   }
 }
