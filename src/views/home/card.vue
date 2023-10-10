@@ -9,7 +9,7 @@ import { add, divide, multiply, subtract } from '@/mixins/math.js';
 gsap.registerPlugin(ScrollTrigger, Draggable, TextPlugin);
 
 
-const block = new Array(8);
+const block = new Array(7);
 for (let i = 0; i < block.length; i++) {
   block[i] = 'display' + i
 }//块显示内容
@@ -240,33 +240,41 @@ onMounted(() => {
       startX = loop.progress();
     },
     onDrag() {
-      // if (tweenLoop) {
-      //   tweenLoop.pause();
-      //   tweenLoop = null;
-      //   oi = adsorption(map(loop.progress()));
-      //   console.log(oi);
-      // }
+      if (tweenLoop) {
+        tweenLoop.pause();
+        tweenLoop = null;
+        nowIndex = adsorption(loop.time())
+      }
       loop.progress(wrap(initBox.draggableStart + (this.startX - this.x) * (1 / initBox.totalWidth())));
+      //拖动强制结束动画，进行拖动操作
+      // if (bool) {
+      //   loop.progress(wrap(initBox.draggableStart + (this.startX - this.x) * (1 / initBox.totalWidth())));
+      //   nowIndex = adsorption(loop.time())
+      // }
+      //强制等动画结束才能拖动
+      
     },
     onDragEnd() {
-      toIndex(loop.time(), { duration: 0.4 })
-      bool = true
+      nowIndex = adsorption(loop.time())
+      toIndex(loop.time(), { duration: 0.4 }, true)
     },
   })
   loop.draggable = draggable;
   loop.progress(1, true).progress(io[0], true);
 
 
-
+  console.log(loop.duration());
   let bool = true;
   let tweenLoop = null;
   console.log(loop.duration());
-  function toIndex(timeVal, config) {
-    if (!bool) {
-      return
-    } else {
-      bool = false;
-      setTimeout(() => bool = true, config.duration ? add(multiply(config.duration, 1000), 200) : 800);
+  function toIndex(timeVal, config, compel) {
+    if (!compel) {
+      if (!bool) {
+        return
+      } else {
+        bool = false;
+        setTimeout(() => bool = true, config.duration ? add(multiply(config.duration, 1000), 200) : 800);
+      }
     }
     let vals = adsorption(loop.time());
     let val = adsorption(timeVal)
@@ -276,29 +284,50 @@ onMounted(() => {
 
     console.log("当前的时间轴值是" + times[nowIndex], "索引值是" + nowIndex, "目标时间轴值是" + times[val], "目标索引是" + val, vals);
     switch (true) {
-      case (subtract(times[val], times[nowIndex]) > divide(loop.duration(), 2)):
+      case ((subtract(times[val], times[nowIndex]) > divide(loop.duration(), 2)) && (loop.time() < times[val]) && ((-loop.time()) >= (-times[val])) && subtract(loop.time(), multiply(midrange, 6)) < 0):
         config.modifiers = { time: gsap.utils.wrap(0, loop.duration()), overwrite: true };
         tweenLoop = loop.tweenTo(
-          subtract(times[nowIndex], subtract(add(times[nowIndex], loop.duration()), times[val]))
+          // subtract(loop.time(), subtract(add(times[nowIndex], loop.duration()), times[val]))
+          -(subtract(loop.duration(), times[val]))
           , config);
-        console.log('123');
-        break;
-      case ((subtract(times[val], times[nowIndex]) < -divide(loop.duration(), 2)) && loop.time() >= times[nowIndex]):
+        console.log({
+          "当前time值": loop.time(),
+          "nowIndex": nowIndex,
+          "val": val,
+          "times[val]": times[val],
+          "times[nowIndex]": times[nowIndex]
+        }, "<-----------");
+        break;//   <------
+      case ((subtract(times[val], times[nowIndex]) < -divide(loop.duration(), 2)) && loop.time() >= subtract(times[nowIndex], midrange) && subtract(loop.time(), divide(loop.duration(), 2)) > 0):
         config.modifiers = { time: gsap.utils.wrap(0, loop.duration()), overwrite: true };
         tweenLoop = loop.tweenTo(
-          add(times[nowIndex], add(subtract(loop.duration(), times[nowIndex]), times[val]))
+          // add(times[nowIndex], add(subtract(loop.duration(), times[nowIndex]), times[val]))
+          add(loop.time(), add(subtract(loop.duration(), times[nowIndex]), times[val]))
           , config);
-        console.log('321', loop.time() > times[nowIndex]);
-        break;
-      case ((times[val] === times[nowIndex]) && (Math.abs(subtract(loop.time(), loop.duration())) > subtract(loop.duration(), midrange))):
+        console.log({
+          "当前time值": loop.time(),
+          "nowIndex": nowIndex,
+          "val": val,
+          "times[val]": times[val],
+          "times[nowIndex]": times[nowIndex]
+        }, "----------->");
+        break;//  -------->
+      case ((val === nowIndex) && (Math.abs(subtract(loop.time(), loop.duration())) > subtract(loop.duration(), midrange)) && (-loop.time() >= -times[nowIndex])):
         config.modifiers = { time: gsap.utils.wrap(0, loop.duration()), overwrite: true };
-        tweenLoop = loop.tweenTo(-(subtract(loop.duration(), times[val])), config);
-        console.log(loop.duration(), times[val], times[val] > loop.time());
-        console.log(-add(subtract(loop.duration(), times[val]), loop.time()), 'woca')
-        break;
+        tweenLoop = loop.tweenTo(-(subtract(loop.duration(), times[vals])), config);//gai
+        console.log(loop.duration(), times[vals], loop.time());
+        console.log(-(subtract(loop.duration(), times[vals])), 'woca')
+        break;// ||||||||||||||||
       default:
         tweenLoop = loop.tweenTo(times[val], config);
-        console.log('busb');
+        console.log({
+          'vals': vals,
+          "当前time值": loop.time(),
+          "nowIndex": nowIndex,
+          "val": val,
+          "times[val]": times[val],
+          "times[nowIndex]": times[nowIndex]
+        }, "-----------");
         break;
     }
     console.log(tweenLoop.vars.time, loop.time());
@@ -363,6 +392,10 @@ onMounted(() => {
 
   box.forEach((item, index) => {
     item.addEventListener('click', () => {
+      if (nowIndex === index) {
+        console.log('cnm');
+        return
+      }
       toIndex(times[index], { duration: 0.6 })
     })
   })
