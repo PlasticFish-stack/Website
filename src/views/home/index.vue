@@ -6,7 +6,7 @@ import card from '@/views/home/card.vue'
 <template>
   <div class="view">
     
-    <!-- <carousel></carousel> -->
+    <carousel></carousel>
     <card></card>
     
   </div>

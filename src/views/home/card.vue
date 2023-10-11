@@ -312,8 +312,9 @@ onMounted(() => {
           "times[nowIndex]": times[nowIndex]
         }, "----------->");
         break;//  -------->
-      case ((val === nowIndex) && (Math.abs(subtract(loop.time(), loop.duration())) > subtract(loop.duration(), midrange)) && (-loop.time() >= -times[nowIndex])):
+      case ((val === nowIndex) && times[vals] == gsap.utils.snap(times, loop.duration())&& (Math.abs(subtract(loop.time(), loop.duration())) > subtract(loop.duration(), midrange)) && (-loop.time() >= -times[nowIndex])):
         config.modifiers = { time: gsap.utils.wrap(0, loop.duration()), overwrite: true };
+        // if(-loop.time() < )
         tweenLoop = loop.tweenTo(-(subtract(loop.duration(), times[vals])), config);//gai
         console.log(loop.duration(), times[vals], loop.time());
         console.log(-(subtract(loop.duration(), times[vals])), 'woca')
@@ -396,7 +397,7 @@ onMounted(() => {
         console.log('cnm');
         return
       }
-      toIndex(times[index], { duration: 0.6 })
+      toIndex(times[index], { duration: 1, ease: "steps(1000)" })
     })
   })
   document.querySelector("#next").addEventListener("click", () => {

@@ -45,6 +45,7 @@ onDeactivated(() => {
   z-index: 1;
 }
 #layout{
-  margin-top: 5rem
+  margin-top: 5rem;
+  overflow-x: hidden;
 }
 </style>
