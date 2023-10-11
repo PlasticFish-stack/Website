@@ -7,8 +7,9 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { add, divide, multiply, subtract } from '@/mixins/math.js';
 
 gsap.registerPlugin(ScrollTrigger, Draggable, TextPlugin);
-
-
+const message = ref(null)
+const buy = ref(null)
+const title = ref(null)
 const block = new Array(7);
 for (let i = 0; i < block.length; i++) {
   block[i] = 'display' + i
@@ -25,6 +26,7 @@ const throttle = (fn, time) => {
   }
 }
 onMounted(() => {
+  console.log(title);
   const box = gsap.utils.toArray('.swiper_box');
   const margin = 30
   const color = ['#00828b', '#276893', '#37344c', '#004db5', '#e67a2a', '#afc8ba', '#b65b46', '#c6574b', '#a22076', '#423171', '#c3a6cb'];
@@ -123,10 +125,8 @@ onMounted(() => {
   ]
   gsap.set(box, {
     marginRight: margin,
-    backgroundImage: gsap.utils.wrap(imgs)
+    backgroundImage: gsap.utils.wrap(imgs),
   })
-
-  let length = box.length;
   const loop = gsap.timeline({
     repeat: -1,
     paused: true,
@@ -149,7 +149,7 @@ onMounted(() => {
   let times = [];
   let num = [];
   box.forEach((el, index) => {
-    const { width, speed, xStart, xEnd, totalWidth, snap } = initBox;
+    const { width, speed, xStart, totalWidth, snap } = initBox;
     const start = el.offsetLeft - xStart;
     const end = totalWidth() - start;
     loop.to(el, {
@@ -170,8 +170,6 @@ onMounted(() => {
   })
 
   // let ratio = gsap.utils.snap((1 / box.length ));;
-
-  const rtaio_i = (1 / initBox.totalWidth()) * 30
   const curStart = ((document.querySelector('#layout_box').offsetWidth / 2) - (initBox.width / 2)) + ((-box[0].offsetLeft) + initBox.width);
   const map = gsap.utils.mapRange(0, 1, 0, loop.duration());//map方法
 
@@ -196,14 +194,10 @@ onMounted(() => {
   times.forEach((item, index) => {
     newArr[index] = ratio(wrap(loopProgress + index * (1 / box.length)));
   })
-  let animaDraggable = null
+
 
   let nowIndex = 0;
-  let startX = 0;
-  let ratioStart = gsap.utils.snap((1 / initBox.totalWidth() * (initBox.width + margin)));
-  let wrapIndex = gsap.utils.wrap(0, box.length);
-  let curIndex = 0
-  console.log(times);
+
   const midrange = times.some((item, index) => {
     return subtract(times[index + 1], item) > 0
   }) ? divide(subtract(times[1], times[0]), 2) : null;//times偏离值
@@ -222,6 +216,8 @@ onMounted(() => {
       item.min = subtract(item.max, multiply(midrange, 2))
     }
   })
+
+  const boxWrap = gsap.utils.wrap(0, times.length);
   console.table(interval);
   const adsorption = (val) => {
     const result = interval.find((item) => {
@@ -230,11 +226,11 @@ onMounted(() => {
     })
     return result.index
   }
-
+  let startX = null;
   const draggable = Draggable.create('.drag-proxy', {
     trigger: '#layout_box',
     type: "x",
-    minimumMovement: 20,
+    minimumMovement: 40,
     onPressInit() {
       initBox.draggableStart = loop.progress();
       startX = loop.progress();
@@ -252,9 +248,10 @@ onMounted(() => {
       //   nowIndex = adsorption(loop.time())
       // }
       //强制等动画结束才能拖动
-      
+
     },
     onDragEnd() {
+      console.log('chufa');
       nowIndex = adsorption(loop.time())
       toIndex(loop.time(), { duration: 0.4 }, true)
     },
@@ -263,10 +260,10 @@ onMounted(() => {
   loop.progress(1, true).progress(io[0], true);
 
 
-  console.log(loop.duration());
+
   let bool = true;
   let tweenLoop = null;
-  console.log(loop.duration());
+  let textVal = 0;
   function toIndex(timeVal, config, compel) {
     if (!compel) {
       if (!bool) {
@@ -284,12 +281,13 @@ onMounted(() => {
 
     console.log("当前的时间轴值是" + times[nowIndex], "索引值是" + nowIndex, "目标时间轴值是" + times[val], "目标索引是" + val, vals);
     switch (true) {
-      case ((subtract(times[val], times[nowIndex]) > divide(loop.duration(), 2)) && (loop.time() < times[val]) && ((-loop.time()) >= (-times[val])) && subtract(loop.time(), multiply(midrange, 6)) < 0):
+      case ((subtract(times[val], loop.time()) > divide(loop.duration(), 2)) && (loop.time() < times[val]) && ((-loop.time()) >= (-times[val])) && subtract(loop.time(), multiply(midrange, 6)) < 0):
         config.modifiers = { time: gsap.utils.wrap(0, loop.duration()), overwrite: true };
         tweenLoop = loop.tweenTo(
           // subtract(loop.time(), subtract(add(times[nowIndex], loop.duration()), times[val]))
           -(subtract(loop.duration(), times[val]))
           , config);
+        textChange()
         console.log({
           "当前time值": loop.time(),
           "nowIndex": nowIndex,
@@ -304,6 +302,7 @@ onMounted(() => {
           // add(times[nowIndex], add(subtract(loop.duration(), times[nowIndex]), times[val]))
           add(loop.time(), add(subtract(loop.duration(), times[nowIndex]), times[val]))
           , config);
+        textChange();
         console.log({
           "当前time值": loop.time(),
           "nowIndex": nowIndex,
@@ -312,15 +311,19 @@ onMounted(() => {
           "times[nowIndex]": times[nowIndex]
         }, "----------->");
         break;//  -------->
-      case ((val === nowIndex) && times[vals] == gsap.utils.snap(times, loop.duration())&& (Math.abs(subtract(loop.time(), loop.duration())) > subtract(loop.duration(), midrange)) && (-loop.time() >= -times[nowIndex])):
+      case ((val === nowIndex) && times[vals] == gsap.utils.snap(times, loop.duration()) && (Math.abs(subtract(loop.time(), loop.duration())) > subtract(loop.duration(), midrange)) && (-loop.time() >= -times[nowIndex])):
         config.modifiers = { time: gsap.utils.wrap(0, loop.duration()), overwrite: true };
-        // if(-loop.time() < )
-        tweenLoop = loop.tweenTo(-(subtract(loop.duration(), times[vals])), config);//gai
+        tweenLoop = loop.tweenTo(-(subtract(loop.duration(), times[vals])), config);
         console.log(loop.duration(), times[vals], loop.time());
         console.log(-(subtract(loop.duration(), times[vals])), 'woca')
         break;// ||||||||||||||||
       default:
         tweenLoop = loop.tweenTo(times[val], config);
+        // if(!times[val] == times[nowIndex]){
+        //   textChange()
+        // }
+        console.log(vals, nowIndex, val, loop.time(), adsorption(loop.time()));
+        textChange(vals)
         console.log({
           'vals': vals,
           "当前time值": loop.time(),
@@ -332,25 +335,33 @@ onMounted(() => {
         break;
     }
     console.log(tweenLoop.vars.time, loop.time());
+
     nowIndex = val
     return tweenLoop
   }
 
+  gsap.set(title.value, {
+    text: msg[nowIndex].content,
+  })
+  gsap.set(message.value, {
+    text: msg[nowIndex].alink0.title
+  })
+  gsap.set(buy.value, {
+    text: msg[nowIndex].alink1.title
+  })
 
-
-
-
-
-
-  function textChange() {
-    gsap.timeline().to("#titleSpan", {
+  function textChange(val) {
+    if (textVal == val) {
+      return
+    }
+    gsap.timeline().to(title.value, {
       opacity: 0,
       y: -50,
-    }).to("#titleSpan", {
+    }).to(title.value, {
       y: 10,
       text: msg[nowIndex].content,
       duration: 0
-    }).to("#titleSpan", {
+    }).to(title.value, {
       opacity: 1,
       y: 0,
       duration: 0.2
@@ -358,15 +369,15 @@ onMounted(() => {
 
 
 
-    gsap.timeline().to(".alink", {
+    gsap.timeline().to(message.value, {
       opacity: 0,
       y: -30,
       duration: 0.6
-    }).to(".alink", {
+    }).to(message.value, {
       y: 20,
       text: msg[nowIndex].alink0.title,
       duration: 0
-    }).to(".alink", {
+    }).to(message.value, {
       opacity: 1,
       y: 0,
       duration: 0.6
@@ -374,22 +385,23 @@ onMounted(() => {
 
 
 
-    gsap.timeline().to(".abuy", {
+    gsap.timeline().to(buy.value, {
       opacity: 0,
       y: -30,
       duration: 0.6
-    }).to(".abuy", {
+    }).to(buy.value, {
       y: 20,
       text: msg[nowIndex].alink1.title,
       duration: 0
-    }).to(".abuy", {
+    }).to(buy.value, {
       opacity: 1,
       y: 0,
       ease: '"power4.out"',
       duration: 0.6
     })
+    textVal = val
+    console.log(textVal, 'TEXT');
   }
-
 
   box.forEach((item, index) => {
     item.addEventListener('click', () => {
@@ -397,17 +409,14 @@ onMounted(() => {
         console.log('cnm');
         return
       }
-      toIndex(times[index], { duration: 1, ease: "steps(1000)" })
+      toIndex(times[index], { duration: 1 })
     })
   })
   document.querySelector("#next").addEventListener("click", () => {
-
-    console.log(promiseWaiting);
-    // throttle(toIndex(nowIndex+1, {duration: 0.4}), 2000)
-
+    toIndex(times[boxWrap(nowIndex + 1)], { duration: 0.4 })
   })
   document.querySelector("#prev").addEventListener("click", () => {
-    // throttle(toIndex(nowIndex - 1, { duration: 0.4 }), 2000)
+    toIndex(times[boxWrap(nowIndex - 1)], { duration: 0.4 })
   })
 
 
@@ -434,23 +443,20 @@ onMounted(() => {
 
     <div id="layout_box">
       <div id="msg">
-        <span>拍摄设备</span>
-        <span id="titleSpan"></span>
+        <span>灯光设备</span>
+        <span ref="title"></span>
         <div>
-          <a href="" class="alink">了解更多</a>
-          <a href="" class="abuy">立即购买</a>
+          <a ref="message"></a>
+          <a ref="buy"></a>
         </div>
       </div>
       <div class="swiper_box" :key="item" v-for="item in block">
-        <div style="color: black; font-size: 80px;">
-          {{ item }}
-        </div>
 
       </div>
       <div>
 
-        <div id="prev">左</div>
-        <div id="next">右</div>
+        <div id="prev">&lt</div>
+        <div id="next">&gt</div>
       </div>
 
       <div class="drag-proxy"></div>
@@ -473,6 +479,8 @@ onMounted(() => {
   span {
     font-size: 48px;
     margin-bottom: 10px;
+    font-weight: 600;
+    color: white;
   }
 
   div {
@@ -481,14 +489,20 @@ onMounted(() => {
   }
 
   a {
-    color: black;
-    margin-left: 5px;
-    margin-right: 5px;
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    margin-left: 25px;
+    margin-right: 25px;
     display: block;
+    position: relative;
   }
 
   a::after {
-    content: '1';
+    position: absolute;
+    height: 18px;
+    width: 18px;
+    content: url(@/icons/subscript.svg);
   }
 }
 
@@ -531,15 +545,33 @@ onMounted(() => {
     display: flex;
     justify-content: center;
 
+    .mask {
+      background-color: black;
+      opacity: 0.5;
+    }
+
     .swiper_box {
       height: 720px;
       width: 1200px;
-      background-color: black;
       display: flex;
       justify-content: center;
       align-items: center;
       flex-shrink: 0;
-      // background-image: url(@/assets/Background/1.jpg);
+      position: relative;
+    }
+
+    .swiper_box::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: black;
+      opacity: 0.3;
+      /* 可调整透明度 */
+      z-index: 1;
+      /* 确保遮罩层在背景之上 */
     }
 
     #prev {
@@ -577,5 +609,4 @@ onMounted(() => {
       position: absolute
     }
   }
-}
-</style>
+}</style>
