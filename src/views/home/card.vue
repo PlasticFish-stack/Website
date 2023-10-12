@@ -14,21 +14,10 @@ const block = new Array(7);
 for (let i = 0; i < block.length; i++) {
   block[i] = 'display' + i
 }//块显示内容
-const throttle = (fn, time) => {
-  let timer = null;
-  return function () {
-    if (!timer) {
-      timer = setTimeout(function () {
-        fn()
-        timer = null
-      }, time)
-    }
-  }
-}
 onMounted(() => {
   console.log(title);
   const box = gsap.utils.toArray('.swiper_box');
-  const margin = 30
+  const margin = 0
   const color = ['#00828b', '#276893', '#37344c', '#004db5', '#e67a2a', '#afc8ba', '#b65b46', '#c6574b', '#a22076', '#423171', '#c3a6cb'];
   const imgs = ['url(src/assets/Background/1.jpg)',
     'url(src/assets/Background/2.jpg)',
@@ -218,7 +207,7 @@ onMounted(() => {
   })
 
   const boxWrap = gsap.utils.wrap(0, times.length);
-  console.table(interval);
+  console.table(times, '12345');
   const adsorption = (val) => {
     const result = interval.find((item) => {
       if (val >= item.min)
@@ -287,7 +276,6 @@ onMounted(() => {
           // subtract(loop.time(), subtract(add(times[nowIndex], loop.duration()), times[val]))
           -(subtract(loop.duration(), times[val]))
           , config);
-        textChange()
         console.log({
           "当前time值": loop.time(),
           "nowIndex": nowIndex,
@@ -302,7 +290,6 @@ onMounted(() => {
           // add(times[nowIndex], add(subtract(loop.duration(), times[nowIndex]), times[val]))
           add(loop.time(), add(subtract(loop.duration(), times[nowIndex]), times[val]))
           , config);
-        textChange();
         console.log({
           "当前time值": loop.time(),
           "nowIndex": nowIndex,
@@ -323,7 +310,7 @@ onMounted(() => {
         //   textChange()
         // }
         console.log(vals, nowIndex, val, loop.time(), adsorption(loop.time()));
-        textChange(vals)
+
         console.log({
           'vals': vals,
           "当前time值": loop.time(),
@@ -335,22 +322,25 @@ onMounted(() => {
         break;
     }
     console.log(tweenLoop.vars.time, loop.time());
-
+    console.log(nowIndex, 'vals')
+    textChange(val)
+    console.log(msg[val].content);
     nowIndex = val
     return tweenLoop
   }
 
   gsap.set(title.value, {
-    text: msg[nowIndex].content,
+    text: msg[0].content,
   })
   gsap.set(message.value, {
-    text: msg[nowIndex].alink0.title
+    text: msg[0].alink0.title
   })
   gsap.set(buy.value, {
-    text: msg[nowIndex].alink1.title
+    text: msg[0].alink1.title
   })
 
   function textChange(val) {
+    console.log(val, 'textchange val');
     if (textVal == val) {
       return
     }
@@ -359,7 +349,7 @@ onMounted(() => {
       y: -50,
     }).to(title.value, {
       y: 10,
-      text: msg[nowIndex].content,
+      text: msg[val].content,
       duration: 0
     }).to(title.value, {
       opacity: 1,
@@ -375,7 +365,7 @@ onMounted(() => {
       duration: 0.6
     }).to(message.value, {
       y: 20,
-      text: msg[nowIndex].alink0.title,
+      text: msg[val].alink0.title,
       duration: 0
     }).to(message.value, {
       opacity: 1,
@@ -391,7 +381,7 @@ onMounted(() => {
       duration: 0.6
     }).to(buy.value, {
       y: 20,
-      text: msg[nowIndex].alink1.title,
+      text: msg[val].alink1.title,
       duration: 0
     }).to(buy.value, {
       opacity: 1,
@@ -413,9 +403,11 @@ onMounted(() => {
     })
   })
   document.querySelector("#next").addEventListener("click", () => {
+    console.log(times[boxWrap(nowIndex + 1)], 'next');
     toIndex(times[boxWrap(nowIndex + 1)], { duration: 0.4 })
   })
   document.querySelector("#prev").addEventListener("click", () => {
+    console.log(times[boxWrap(nowIndex - 1)], 'prev');
     toIndex(times[boxWrap(nowIndex - 1)], { duration: 0.4 })
   })
 
@@ -453,11 +445,17 @@ onMounted(() => {
       <div class="swiper_box" :key="item" v-for="item in block">
 
       </div>
-      <div>
 
-        <div id="prev">&lt</div>
-        <div id="next">&gt</div>
-      </div>
+      <div id="prev"><svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-v-ea893728="">
+          <path fill="white"
+            d="M685.248 104.704a64 64 0 0 1 0 90.496L368.448 512l316.8 316.8a64 64 0 0 1-90.496 90.496L232.704 557.248a64 64 0 0 1 0-90.496l362.048-362.048a64 64 0 0 1 90.496 0z">
+          </path>
+        </svg></div>
+      <div id="next"><svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-v-ea893728="">
+          <path fill="white"
+            d="M338.752 104.704a64 64 0 0 0 0 90.496l316.8 316.8-316.8 316.8a64 64 0 0 0 90.496 90.496l362.048-362.048a64 64 0 0 0 0-90.496L429.248 104.704a64 64 0 0 0-90.496 0z">
+          </path>
+        </svg></div>
 
       <div class="drag-proxy"></div>
     </div>
@@ -552,7 +550,7 @@ onMounted(() => {
 
     .swiper_box {
       height: 720px;
-      width: 1200px;
+      width: 390px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -579,7 +577,6 @@ onMounted(() => {
       width: 50px;
       position: absolute;
       z-index: 999;
-      background-color: white;
       border-radius: 45px;
       display: flex;
       justify-content: center;
@@ -594,13 +591,12 @@ onMounted(() => {
       width: 50px;
       position: absolute;
       z-index: 999;
-      background-color: white;
       display: flex;
       border-radius: 45px;
       justify-content: center;
       align-items: center;
       right: 45%;
-      top: 50%;
+      top:20%;
       transform: translate(380px, -50%);
     }
 
